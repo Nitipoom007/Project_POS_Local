@@ -14,6 +14,7 @@ function Showusers() {
     const [users, setUsers] = useState([]);
     const navigate = useNavigate(); // Initialize useNavigate
     const [isOpen, setIsOpen] = useState(false);
+    const [isAddUserOpen, setIsAddUserOpen] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
 
     const fetchUsers = async () => {
@@ -36,19 +37,36 @@ function Showusers() {
 
     const handleClosePopup = () => {
         setIsOpen(false);
+        setIsAddUserOpen(false);
         setSelectedUser(null);
     };
 
     return (
         <div >
-            <Adduser />
+            {/* <Adduser /> */}
             <div className="bg-white rounded-xl p-8 mx-auto overflow-x-auto flex-grow">
-                <h3 className="text-xl font-semibold text-gray-800 mb-4">
+                {/* <h3 className="text-xl font-semibold text-gray-800 mb-4"> */}
+                <div className='flex justify-between items-center mb-4'>
                     <div className='flex items-center text-2xl'>
-                        <HiUserGroup className='mr-2' />&nbsp;
-                        รายชื่อผู้ใช้งาน
+                        <h3 className="text-xl font-semibold text-gray-800 mb-4">
+                            <div className='flex justify-center items-center font-bold '>
+                                <HiUserGroup className='mr-2' />&nbsp;
+                                รายชื่อผู้ใช้งาน
+                            </div>
+                            {/* <HiUserGroup className='mr-2' />&nbsp; */}
+                        </h3>
                     </div>
-                </h3>
+                    <div className='flex items-center'>
+                        <button
+                            className="bg-blue-500 text-white rounded-lg px-4 py-2 mt-4"
+                            onClick={() => setIsAddUserOpen(true)}
+                        >
+                            {/* {isAddUserOpen ? 'ปิด' : 'เพิ่มผู้ใช้งาน'} */}
+                            Add user
+                        </button>
+                    </div>
+                {/* </h3> */}
+                </div>
                 <table className="min-w-full bg-white" style={{ width: '100%' }}>
                     <thead>
                         <tr>
@@ -145,6 +163,21 @@ function Showusers() {
                         <div className="bg-white p-6 rounded-[60px] w-[800px] text-center shadow-lg relative">
                             <Editusers user={selectedUser} onClose={handleClosePopup} />
                             <p className='mt-8'>****** UserID : {selectedUser.user_id} ******</p>
+                            <button
+                                onClick={handleClosePopup}
+                                className="absolute top-4 right-6 bg-gray-200 text-gray-600 rounded-full w-8 h-8 text-xl flex items-center justify-center hover:bg-gray-300 transition"
+                            >
+                                x
+                            </button>
+                        </div>
+                    </div>
+                )}
+                {isAddUserOpen && (
+                    <div className="fixed inset-0 bg-gray-800 bg-opacity-50 border-black-500 flex justify-center items-center"
+                        style={{ backdropFilter: 'blur(5px)', borderColor: 'black' }}> {/* Changed background opacity */}
+                        <div className="bg-white p-6 rounded-[60px] w-[800px] text-center shadow-lg relative">
+                            <Adduser onClose={handleClosePopup} />
+                            {/* <p className='mt-8'>****** UserID : {selectedUser.user_id} ******</p> */}
                             <button
                                 onClick={handleClosePopup}
                                 className="absolute top-4 right-6 bg-gray-200 text-gray-600 rounded-full w-8 h-8 text-xl flex items-center justify-center hover:bg-gray-300 transition"

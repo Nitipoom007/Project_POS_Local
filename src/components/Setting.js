@@ -15,14 +15,14 @@ function Setting() {
         &nbsp;<MdSettings />
         การตั้งค่า
       </h2>
-      <h3 className="text-2xl font-bold text-gray-800 flex">
-        <div className='flex items-center text-2xl'>
+      {/* <h3 className="text-2xl font-bold text-gray-800 flex">
+        <div className='flex items-center text-2xl'> */}
           {/* <MdManageAccounts /> */}
-          <FcPortraitMode />
-        </div>
+          {/* <FcPortraitMode /> */}
+        {/* </div>
         &nbsp;&nbsp;
         <div>Manageuser</div>
-      </h3>
+      </h3> */}
       {/* <Adduser /> */}
       <div className='mt-8' style={{ width: '100%' }}><Showusers /></div>
     </div>
