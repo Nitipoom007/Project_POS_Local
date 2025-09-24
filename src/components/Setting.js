@@ -7,6 +7,7 @@ import { MdSettings, MdManageAccounts } from 'react-icons/md'
 import { FcPortraitMode } from "react-icons/fc";
 
 import Showusers from '../setting/Showusers';
+import Shopdata from '../setting/Shopdata';
 
 function Setting() {
   return (
@@ -25,6 +26,7 @@ function Setting() {
       </h3> */}
       {/* <Adduser /> */}
       <div className='mt-8' style={{ width: '100%' }}><Showusers /></div>
+      <div className='mt-8' style={{ width: '100%' }}><Shopdata /></div>
     </div>
   );
 }

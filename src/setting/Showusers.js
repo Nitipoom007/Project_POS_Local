@@ -176,6 +176,7 @@ function Showusers() {
                     <div className="fixed inset-0 bg-gray-800 bg-opacity-50 border-black-500 flex justify-center items-center"
                         style={{ backdropFilter: 'blur(5px)', borderColor: 'black' }}> {/* Changed background opacity */}
                         <div className="bg-white p-6 rounded-[60px] w-[800px] text-center shadow-lg relative">
+                           <h2 className='text-2xl font-bold text-black-700'>- เพิ่มข้อมูลผู้ใช้งาน -</h2>
                             <Adduser onClose={handleClosePopup} />
                             {/* <p className='mt-8'>****** UserID : {selectedUser.user_id} ******</p> */}
                             <button
