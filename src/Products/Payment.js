@@ -254,73 +254,207 @@ function Payment({ total, selected }) {
         }
     }
     //----------------------------------------------------------------------------------------------------------------
-    const generatePDF = (data, billNo, Shop) => {
+    // const generatePDF = (data, billNo, Shop) => {
+    //     const doc = new jsPDF({
+    //         orientation: "p",   // "p" = portrait (แนวตั้ง), "l" = landscape (แนวนอน)
+    //         unit: "mm",         // หน่วย: mm, cm, in, px, pt
+    //         format: "a4"        // หรือจะใส่ [210, 297] ก็ได้
+    //     });
+
+    //     doc.setFontSize(18);
+    //     doc.setFont("THSarabunNew", "normal");
+
+    //     // Header ร้านค้า
+    //     doc.setFontSize(24);
+    //     doc.text(`${shopaddress[0].shop_name}`, 105, 20, { align: "center" });
+    //     doc.setFontSize(12);
+    //     doc.text(`${shopaddress[0].shop_address}`, 105, 28, { align: "center" });
+    //     doc.text(`โทร: ${shopaddress[0].shop_tel}`, 105, 34, { align: "center" });
+
+    //     // ข้อมูลบิล
+    //     doc.setFontSize(14);
+    //     doc.text(`เลขที่บิล: ${billNo}`, 14, 50);
+    //     doc.text(`วันที่: ${dateTime.toLocaleDateString("th-TH")} เวลา: ${dateTime.toLocaleTimeString("th-TH")}`, 14, 58);
+    //     doc.text(`ชื่อลูกค้า:           `, 14, 66);
+    //     const method = paymentMethod ? "PromptPay" : "เงินสด";
+    //     doc.text(`ชำระแบบ: ${method}`, 160, 66);
+
+    //     // doc.setFontSize(16);
+    //     doc.text(`ลำดับ                                สินค้า                                 จำนวน                               ราคา                       รวม`, 15, 78);
+    //     // ตารางสินค้า
+    //     autoTable(doc, {
+    //         startY: 80,
+    //         // head: [["ลำดับ", "สินค้า", "จำนวน", "ราคา", "รวม"]],
+    //         body: [
+    //             ...data.map((item, index) => [
+    //                 index + 1,
+    //                 item.product_name,
+    //                 "x" + item.quantity,
+    //                 Number(item.product_price).toLocaleString('en-US', { minimumFractionDigits: 2 }),
+    //                 Number(item.quantity * item.product_price).toLocaleString('en-US', { minimumFractionDigits: 2 })
+    //             ])
+    //         ],
+    //         styles: { font: "THSarabunNew", fontSize: 12, halign: "center" },
+    //         headStyles: { fillColor: [41, 128, 185] },
+    //         columnStyles: {
+    //             0: { halign: "left" },
+    //             1: { halign: "left" },
+    //             2: { halign: "right" },
+    //             3: { halign: "right" }
+    //         }
+    //     });
+
+    //     const finalY = doc.lastAutoTable.finalY || 100;
+    //     const cash = money - total;
+    //     doc.setFontSize(14);
+    //     doc.text(`ยอดรวมสุทธิ: ${(Number(total) || 0).toLocaleString('en-US', { minimumFractionDigits: 2 })} บาท`, 195, finalY + 10, { align: "right" });
+    //     doc.text(`รับ: ${(Number(money) || 0).toLocaleString('en-US', { minimumFractionDigits: 2 })} บาท`, 195, finalY + 20, { align: "right" });
+    //     doc.text(`เงินทอน: ${(method === "PromptPay" ? 0 : (Number(cash) || 0)).toLocaleString('en-US', { minimumFractionDigits: 2 })} บาท`, 195, finalY + 30, { align: "right" });
+
+
+    //     // Footer
+    //     doc.setFontSize(12);
+    //     doc.text("ขอบคุณที่ใช้บริการ", 105, finalY + 40, { align: "center" });
+
+    //     doc.save(`${billNo}.pdf`);
+    //-------
+    const generatePDF = (
+        data,
+        billNo,
+        shopaddress
+        // money
+        // paymentMethod // true = PromptPay
+    ) => {
+
+        // ===== CALC SAFE =====
+        const safeMoney = Number(money) || 0;
+        const safeTotal = data.reduce(
+            (sum, i) =>
+                sum +
+                (Number(i.quantity) || 0) *
+                (Number(i.product_price) || 0),
+            0
+        );
+        const cash = safeMoney - safeTotal;
+
+        // ===== PDF =====
         const doc = new jsPDF({
-            orientation: "p",   // "p" = portrait (แนวตั้ง), "l" = landscape (แนวนอน)
-            unit: "mm",         // หน่วย: mm, cm, in, px, pt
-            format: "a4"        // หรือจะใส่ [210, 297] ก็ได้
+            orientation: "p",
+            unit: "mm",
+            format: [43, 100] // ขนาดใบเสร็จ 43mm x 100mms
         });
 
-        doc.setFontSize(18);
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const centerX = pageWidth / 2;
+        const rightX = pageWidth - 2;
+        let y = 6;
+
+        const dateTime = new Date();
+        const method = paymentMethod ? "PromptPay" : "เงินสด";
+
         doc.setFont("THSarabunNew", "normal");
 
-        // Header ร้านค้า
-        doc.setFontSize(24);
-        doc.text(`${shopaddress[0].shop_name}`, 105, 20, { align: "center" });
-        doc.setFontSize(12);
-        doc.text(`${shopaddress[0].shop_address}`, 105, 28, { align: "center" });
-        doc.text(`โทร: ${shopaddress[0].shop_tel}`, 105, 34, { align: "center" });
+        // ===== HEADER =====
+        doc.setFontSize(16);
+        doc.text(shopaddress[0].shop_name, centerX, y, { align: "center" });
+        y += 5;
 
-        // ข้อมูลบิล
-        doc.setFontSize(14);
-        doc.text(`เลขที่บิล: ${billNo}`, 14, 50);
-        doc.text(`วันที่: ${dateTime.toLocaleDateString("th-TH")} เวลา: ${dateTime.toLocaleTimeString("th-TH")}`, 14, 58);
-        doc.text(`ชื่อลูกค้า:           `, 14, 66);
-        const method = paymentMethod ? "PromptPay" : "เงินสด";
-        doc.text(`ชำระแบบ: ${method}`, 160, 66);
+        doc.setFontSize(9);
+        doc.text(shopaddress[0].shop_address, centerX, y, { align: "center" });
+        y += 4;
 
-        // doc.setFontSize(16);
-        doc.text(`ลำดับ                                สินค้า                                 จำนวน                               ราคา                       รวม`, 15, 78);
-        // ตารางสินค้า
+        doc.text(`โทร: ${shopaddress[0].shop_tel}`, centerX, y, { align: "center" });
+        y += 4;
+
+        doc.text("--------------------------------", centerX, y, { align: "center" });
+        y += 4;
+
+        // ===== BILL INFO =====
+        doc.text(`เลขที่บิล: ${billNo}`, 2, y);
+        y += 4;
+
+        doc.text(
+            `วันที่: ${dateTime.toLocaleDateString("th-TH")} เวลา: ${dateTime.toLocaleTimeString("th-TH")}`,
+            2,
+            y
+        );
+        y += 4;
+
+        doc.text(`ชำระแบบ: ${method}`, 2, y);
+        y += 4;
+
+        doc.text("-------------------------------------------------------------", centerX, y, { align: "center" });
+        y += 3;
+
+        // ===== TABLE HEADER (เหมือนต้นแบบ) =====
+        doc.setFontSize(8);
+        doc.text("ลำดับ สินค้า                   จำนวน              รวม", 2, y);
+        y += 3;
+
+        doc.text("-----------------------------------------------------------------", centerX, y, { align: "center" });
+        y += 2;
+
+        // ===== ITEMS =====
         autoTable(doc, {
-            startY: 80,
-            // head: [["ลำดับ", "สินค้า", "จำนวน", "ราคา", "รวม"]],
-            body: [
-                ...data.map((item, index) => [
-                    index + 1,
-                    item.product_name,
-                    "x" + item.quantity,
-                    Number(item.product_price).toLocaleString('en-US', { minimumFractionDigits: 2 }),
-                    Number(item.quantity * item.product_price).toLocaleString('en-US', { minimumFractionDigits: 2 })
-                ])
-            ],
-            styles: { font: "THSarabunNew", fontSize: 12, halign: "center" },
-            headStyles: { fillColor: [41, 128, 185] },
+            startY: y,
+            margin: { left: 1, right: 1 },
+            theme: "plain",
+            body: data.map((item, index) => [
+                index + 1,
+                item.product_name,
+                `${item.product_price.toFixed(2)}x${item.quantity}`,
+                `${(item.quantity * item.product_price).toFixed(2)}฿`
+            ]),
+            styles: {
+                font: "THSarabunNew",
+                fontSize: 10,
+                cellPadding: 0.5
+            },
             columnStyles: {
-                0: { halign: "left" },
-                1: { halign: "left" },
-                2: { halign: "right" },
-                3: { halign: "right" }
+                0: { cellWidth: 4 },
+                1: { cellWidth: 15 },
+                2: { cellWidth: 9, halign: "right" },
+                3: { cellWidth: 12, halign: "right" }
             }
         });
 
-        const finalY = doc.lastAutoTable.finalY || 100;
-        const cash = money - total;
-        doc.setFontSize(14);
-        doc.text(`ยอดรวมสุทธิ: ${(Number(total) || 0).toLocaleString('en-US', { minimumFractionDigits: 2 })} บาท`, 195, finalY + 10, { align: "right" });
-        doc.text(`รับ: ${(Number(money) || 0).toLocaleString('en-US', { minimumFractionDigits: 2 })} บาท`, 195, finalY + 20, { align: "right" });
-        doc.text(`เงินทอน: ${(method === "PromptPay" ? 0 : (Number(cash) || 0)).toLocaleString('en-US', { minimumFractionDigits: 2 })} บาท`, 195, finalY + 30, { align: "right" });
 
+        y = doc.lastAutoTable.finalY + 3;
 
-        // Footer
-        doc.setFontSize(12);
-        doc.text("ขอบคุณที่ใช้บริการ", 105, finalY + 40, { align: "center" });
+        doc.text("--------------------------------", centerX, y, { align: "center" });
+        y += 4;
 
+        // ===== TOTAL =====
+        doc.setFontSize(9);
+        doc.text("ยอดรวมสุทธิ:", 2, y);
+        doc.text(`${safeTotal.toFixed(2)} บาท`, rightX, y, { align: "right" });
+        y += 4;
+
+        doc.text("รับ/ทอน:", 2, y);
+        doc.text(`${safeMoney.toFixed(2)}/${cash.toFixed(2)} บาท`, rightX, y, { align: "right" });
+        y += 4;
+
+        // doc.text("เงินทอน:", 2, y);
+        // doc.text(
+        //     `${method === "PromptPay" ? "0.00" : cash.toFixed(2)} บาท`,
+        //     rightX,
+        //     y,
+        //     { align: "right" }
+        // );
+        // y += 5;
+
+        // ===== FOOTER =====
+        doc.text("--------------------------------", centerX, y, { align: "center" });
+        y += 4;
+
+        doc.text("ขอบคุณที่ใช้บริการ", centerX, y, { align: "center" });
+
+        const string = doc.output('bloburl'); // สร้าง URL ของ PDF
         doc.save(`${billNo}.pdf`);
         // doc.autoPrint();
         // window.open(doc.output('bloburl'), '_blank');
         //
-        doc.output("dataurlnewwindow");
+        // doc.output("dataurlnewwindow");
 
     };
     //----------------------------------------------------------------------------------------------------------------
@@ -403,7 +537,7 @@ function Payment({ total, selected }) {
                     {money >= total && (
                         <p className="text-green-500 mb-2">เงินทอน: {Number(money - total).toLocaleString('en-US', { minimumFractionDigits: 2 })} ฿</p>
                     )}
-    
+
                     <button
                         className="mt-4 bg-red-500 text-white px-4 py-2 rounded"
                         onClick={() => handleClose()} // กดปิด

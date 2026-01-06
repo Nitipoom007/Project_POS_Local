@@ -1,7 +1,7 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Menu, Bell, Search } from "lucide-react";
 import logo from './img/LOGO-KMUTNB.png';
-import Navbar from "./Navbar"; // Import Navbar
+import Navbar2 from "./Navbar2"; // Import Navbar
 import axios from "axios";
 
 /**
@@ -12,7 +12,7 @@ import axios from "axios";
  */
 export default function Topbar({
   title = "My App",
-  onMenuClick = () => {},
+  onMenuClick = () => { },
   rightContent,
 }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -20,16 +20,16 @@ export default function Topbar({
   const Fname = localStorage.getItem('userFirstName');
 
   useEffect(() => {
-        const fetchUsers = async () => {
-            try {
-                const response = await axios.get('http://localhost:5000/api/showusers');
-                setUsers(response.data.data || []);
-            } catch (error) {
-                console.error('Error fetching users:', error);
-            }
-        };
-        fetchUsers();
-    }, []);
+    const fetchUsers = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/showusers');
+        setUsers(response.data.data || []);
+      } catch (error) {
+        console.error('Error fetching users:', error);
+      }
+    };
+    fetchUsers();
+  }, []);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -40,13 +40,13 @@ export default function Topbar({
       <div className="mx-auto flex h-[80px] max-w-screen-xl items-center gap-4 px-6">
 
         {/* Left icon / menu */}
-        <button
+        {/* <button
           aria-label="Open menu"
           onClick={toggleMenu}
           className="inline-flex items-center justify-center rounded-2xl p-3 hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-white/60"
         >
-          <Menu className="h-6 w-6" />
-        </button>
+          {/* <Menu className="h-6 w-6" /> */}
+        {/* </button> */}
 
         <img src={logo} alt="Logo" style={{ height: '40px', width: '40px' }} />
 
@@ -86,7 +86,7 @@ export default function Topbar({
       </div>
       {/* Conditionally render Navbar */}
       {/* {isMenuOpen && <Navbar />} */}
-      <Navbar/>
+      <Navbar2/>
     </header>
   );
 }

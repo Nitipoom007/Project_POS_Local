@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback,useRef } from 'react';
 import axios from 'axios';
 import '../output.css';
 import { TiShoppingCart } from "react-icons/ti";
@@ -98,6 +98,12 @@ function Product() {
         // setTotal(0);
         // setSelectedUser(null);
     };
+    const barcodeRef = useRef(null);
+
+    useEffect(() => {
+        barcodeRef.current?.focus();
+    }, []);
+
 
     return (
         <div className="flex w-full mx-auto p-0 gap-5 mt-8 rounded-lg">
@@ -109,18 +115,41 @@ function Product() {
                             className="flex px-3 py-2 rounded-lg w-56 border border-gray-300 mb-2"
                             type="text"
                             placeholder="   ยิง Barcode ที่นี่"
+                            ref={barcodeRef}
                             value={barcode}
                             maxLength={"13"}
                             onChange={(e) => setBarcode(e.target.value)}
+                            // onKeyDown={(e) => {
+                            //     if (e.key === 'Enter') {
+                            //         const filteredProducts = products.filter(product =>
+                            //             String(product.product_barcode).includes(barcode)
+                            //         );
+                            //         setProductsTemp(filteredProducts);
+                            //         setBarcode('');
+                            //     }
+                            // }}
                             onKeyDown={(e) => {
                                 if (e.key === 'Enter') {
-                                    const filteredProducts = products.filter(product =>
-                                        String(product.product_barcode).includes(barcode)
+                                    const product = products.find(
+                                        p => String(p.product_barcode) === barcode
                                     );
-                                    setProductsTemp(filteredProducts);
-                                    setBarcode('');
+
+                                    if (product) {
+                                        handleSelect(product); // ✅ ใส่ตะกร้าทันที
+                                    } else {
+                                        Swal.fire({
+                                            title: 'ไม่พบสินค้า',
+                                            text: 'Barcode นี้ไม่มีในระบบ',
+                                            icon: 'error',
+                                            timer: 1500,
+                                            showConfirmButton: false
+                                        });
+                                    }
+
+                                    setBarcode(''); // เคลียร์ช่อง
                                 }
                             }}
+
                         />
                         <input
                             type="text"

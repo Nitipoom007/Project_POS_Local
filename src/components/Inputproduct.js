@@ -1,10 +1,12 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import axios from 'axios';
 import '../output.css';
 import Swal from 'sweetalert2';
 
 function Input() {
     const role = localStorage.getItem('userRole');
+    const [category, setCategory] = useState([]);
+    const [unit, setUnit] = useState([]);
     const [form, setForm] = useState({
         userID: role === 'admin' ? "1" : "2",
     });
@@ -32,7 +34,7 @@ function Input() {
             formData.append(key, form[key]);
         }
         // formData.append('userID', userID);
-        // console.log([...formData.entries()]);
+        console.log([...formData.entries()]);
         await fetchProducts(formData);
     };
 
@@ -61,10 +63,35 @@ function Input() {
         }
     }, []);
 
+    // ✅ ดึงหมวดหมู่
+    const fetchCategory = useCallback(async () => {
+        try {
+            const response = await axios.get('http://localhost:5000/api/category');
+            setCategory(response.data.data || []);
+        } catch (error) {
+            console.error('Error fetching category:', error);
+        }
+    }, []);
+
+    // ✅ ดึงข้อมูลหน่วยสินค้า
+    const fetchUnit = useCallback(async () => {
+        try {
+            const response = await axios.get('http://localhost:5000/api/unit');
+            setUnit(response.data.data || []);
+        } catch (error) {
+            console.error('Error fetching unit:', error);
+        }
+    }, []);
+
+    useEffect(() => {
+        fetchCategory();   // ← ดึงข้อมูล category ตอน component เปิด
+        fetchUnit();       // ← ดึงข้อมูล unit ตอน component เปิด
+    }, [fetchCategory, fetchUnit]);
+
+
     return (
         <form onSubmit={handleSubmit} encType="multipart/form-data">
             <h2 className='text-2xl font-bold text-black-700'>- เพิ่มรายการสินค้า -</h2>
-
             <div className="container bg-white rounded-xl shadow-lg p-8 mx-auto ">
                 <div className="flex" style={{ width: '100%' }}>
                     <div className="mb-4 flex flex-col mr-2">
@@ -162,6 +189,20 @@ function Input() {
                     <div className="mb-4 flex flex-col mr-2">
                         <label className='font-bold text-blue-700 mb-1 h-5'>หน่วยนับ</label>
                         <select
+                            name="unitID"
+                            style={{ width: '100%', height: '35px', boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)', borderRadius: '4px', padding: '5px' }}
+                            onChange={(e) => handleChange(e)}
+                            required
+                            className='border-2 border-blue-300 rounded-md p-2'
+                        >
+                            <option value={null}>เลือกหน่วยนับ</option>
+                            {unit.map((c) => (
+                                <option key={c.unit_id} value={c.unit_id} >
+                                    {c.unit_name}
+                                </option>
+                            ))}
+                        </select>
+                        {/* <select
                             // value={unitID}
                             type='text'
                             name="unitID"
@@ -175,12 +216,26 @@ function Input() {
                             <option value="2" >ขวด</option>
                             <option value="3" >ห่อ</option>
                             <option value="4" >ชิ้น</option>
-                        </select>
+                        </select> */}
                     </div>
                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                     <div className="mb-4 flex flex-col">
                         <label className='font-bold text-blue-700 mb-1 h-5'>ประเภทสินค้า</label>
                         <select
+                            name="categoryID"
+                            style={{ width: '100%', height: '35px', boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)', borderRadius: '4px', padding: '5px' }}
+                            onChange={(e) => handleChange(e)}
+                            required
+                            className='border-2 border-blue-300 rounded-md p-2'
+                        >
+                            <option value={null}>เลือกประเภท</option>
+                            {category.map((c) => (
+                                <option key={c.category_id} value={c.category_id} >
+                                    {c.category_name}
+                                </option>
+                            ))}
+                        </select>
+                        {/* <select
                             // value={categoryID}
                             name="categoryID"
                             style={{ width: '100%', height: '35px', boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)', borderRadius: '4px', padding: '5px' }}
@@ -191,9 +246,10 @@ function Input() {
                         >
                             <option value="null" >เลือกประเภท</option>
                             <option value="1" >เครื่องดื่ม</option>
-                            <option value="2" >อาหารแห้ง</option>
-                            <option value="3" >ขนม</option>
-                        </select>
+                            <option value="2">อาหารแห้ง</option>
+                            <option value="3">ขนม</option>
+                            <option value="4">เครื่องปรุง</option>
+                        </select> */}
                     </div>
                 </div>
 

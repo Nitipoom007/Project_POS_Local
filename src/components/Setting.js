@@ -26,7 +26,7 @@ function Setting() {
       </h3> */}
       {/* <Adduser /> */}
       <div className='mt-8' style={{ width: '100%' }}><Showusers /></div>
-      <div className='mt-8' style={{ width: '100%' }}><Shopdata /></div>
+      {/* <div className='mt-8' style={{ width: '100%' }}><Shopdata /></div> */}
     </div>
   );
 }

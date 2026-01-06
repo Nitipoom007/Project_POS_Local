@@ -2,22 +2,19 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import '../output.css';
 import { VscGraphLine } from "react-icons/vsc";
+import PieChartExample from "../chart/Pai";
+import BarChartExample from "../chart/Bar";
+// import { PieChart, Pie, Cell, Tooltip, Legend } from 'recharts';
+
+// const data = [
+//     { name: 'สินค้า A', value: 400 },
+//     { name: 'สินค้า B', value: 300 },
+//     { name: 'สินค้า C', value: 300 },
+//     { name: 'สินค้า D', value: 200 },
+// ];
+// const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 
 function Report() {
-    // const [reportData, setReportData] = useState([]);
-
-    // useEffect(() => {
-    //     const fetchReportData = async () => {
-    //         try {
-    //             const response = await axios.get('http://localhost:5000/api/report');
-    //             setReportData(response.data.data || []);
-    //         } catch (error) {
-    //             console.error('Error fetching report data:', error);
-    //         }
-    //     };
-
-    //     fetchReportData();
-    // }, []);
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [totalsales, setTotalsales] = useState(0);
@@ -91,6 +88,14 @@ function Report() {
                             <p>{Number(totalsales.totalsales).toLocaleString('en-US', { minimumFractionDigits: 2 })} ฿</p>
                         </div>
                     </div>
+                </div>
+            </div>
+            <div className="flex flex-wrap mt-4">
+                <div className="mb-8 px-8">
+                    <PieChartExample />
+                </div>
+                <div className="mb-8 px-8">
+                    <BarChartExample />
                 </div>
             </div>
         </div>

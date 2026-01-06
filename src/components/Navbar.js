@@ -47,15 +47,22 @@ function Navbar() {
               <FaChartBar /> {/* ไอคอนสำหรับเมนู REPORT */}
               REPORT
             </Link>
+{/*----------------------------------------------------------------------*/}
             <Link
               to="/home/Setting"
               className={`flex items-center gap-4 w-full py-3 px-8 rounded-r-2xl font-semibold transition ${isActive('/home/Setting') ? 'bg-blue-900' : 'hover:bg-blue-800'
                 }`}
             >
-              <FaCog /> {/* ไอคอนสำหรับเมนู SETTING */}
+              <FaCog /> 
+              {/* ไอคอนสำหรับเมนู SETTING */}
               SETTING
+              {/* <select className="flex items-center gap-4 w-full py-3 px-8 rounded-r-2xl font-semibold transition">
+                <option value="en">EN</option>
+                <option value="th">TH</option>
+              </select> */}
             </Link>
           </>
+/*----------------------------------------------------------------------*/
         )}
         {role === 'user' && (
           <>
