@@ -22,8 +22,9 @@ function Payment({ total, selected }) {
     const [qrImage, setQrImage] = useState("");
     const [money, setMoney] = useState(0);
     const [head, setHead] = useState("ชำระเงิน")
+    const [updateProduct, setUpdateProduct] = useState([]);
 
-    const phone = "0819077307"; // เบอร์ PromptPay
+    const phone = "0819077307"; // เบอร์ PromptPay 
 
     const generateQR = async () => {
         try {
