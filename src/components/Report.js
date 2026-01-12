@@ -4,6 +4,8 @@ import '../output.css';
 import { VscGraphLine } from "react-icons/vsc";
 import PieChartExample from "../chart/Pai";
 import BarChartExample from "../chart/Bar";
+// import Calendar from "react-calendar";
+// import "react-calendar/dist/Calendar.css";
 // import { PieChart, Pie, Cell, Tooltip, Legend } from 'recharts';
 
 // const data = [
@@ -19,6 +21,7 @@ function Report() {
     const [loading, setLoading] = useState(true);
     const [totalsales, setTotalsales] = useState(0);
     const [bill, setBill] = useState([]);
+    const [date, setDate] = useState(new Date());
 
 
     useEffect(() => {
