@@ -214,182 +214,120 @@ function Product() {
 
 
     return (
-        <div className="flex w-full mx-auto p-0 gap-5 mt-8 rounded-lg">
-            <div className="text-center bg-white w-full justify-center items-center mb-8 px-8 pt-8 py-8 rounded-xl shadow-lg">
-                <h1 className="text-2xl font-bold text-blue-700">รายการสินค้า</h1>
-                <div className='flex'>
-                    <div className='flex gap-5 mt-5'>
-                        <input
-                            type="text"
-                            className="flex px-3 py-2 rounded-lg w-56 border border-gray-300 mb-2"
-                            placeholder="   ค้นหาสินค้า"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            onKeyDown={(e) => {
-                                if (e.key === 'Enter') {
-                                    const filteredProducts = products.filter(product =>
-                                        product.product_name.toLowerCase().includes(searchTerm.toLowerCase())
-                                    );
-                                    setProductsTemp(filteredProducts);
-                                    setSearchTerm('');
-                                }
-                            }}
-                        />
-                    </div>
-                    <div className='flex gap-5 mt-5 '>
-                        <select
-                            className="border px-3 py-2 rounded-lg border-gray-300 mb-2 mx-2 focus:outline-none focus:ring-2 focus:ring-blue-300"
-                            // onClick={fetchCategory}
-                            onChange={(e) => {
-                                const selectedCategory = e.target.value;
-                                if (selectedCategory) {
-                                    const filteredProducts = products.filter(product =>
-                                        product.category_id === Number(selectedCategory)
-                                    );
-                                    setProductsTemp(filteredProducts);
-                                } else {
-                                    setProductsTemp(products);
-                                }
-                            }}
-                        >
-                            <option value="">ประเภทสินค้า</option>
-                            {category.map((c) => (
-                                <option key={c.category_id} value={c.category_id}>
-                                    {c.category_name}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-                </div>
-                <div className="flex justify-center ml-4 mt-1 border-collapse rounded-xl shadow p-0 flex-col lg:flex-row gap-8">
+       <div className="flex w-full mx-auto p-4 justify-center mt-8">
+    <div className="w-full max-w-2xl bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-100">
+        
+        {/* Header Section */}
+        <div className="bg-blue-600 py-6">
+            <h1 className="text-2xl text-center font-bold text-white flex items-center justify-center gap-3">
+                <TiShoppingCart className="text-3xl" />
+                ตะกร้าสินค้า
+            </h1>
+        </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 p-8">
-                        {productsTemp.map(product => (
-                            <button
-                                onClick={() => handleSelect(product)}
-                            // disabled={!!selected.find(p => p.product_id === product.product_id)}
-                            >
-                                <div key={product.product_id} className="bg-blue-50 rounded-xl shadow hover:shadow-lg transition p-6 flex flex-col items-center">
-                                    <img
-                                        src={`http://localhost:5000/uploads/${product.image}`}
-                                        style={{ width: '100%', height: 'auto', objectFit: 'cover', borderRadius: '12px', backgroundColor: 'white', border: '1px solid #e5e7eb' }}
-                                    />
-                                    <label >{product.product_name}</label>
-                                    {/* <label >รหัส: <span className="font-semibold">{product.product_id}</span></label> */}
-                                    <label >{product.product_price} ฿</label>
-                                    <label >{product.product_detail}</label>
-                                    <label className='text-right text-sm'> มี {product.product_quantity} {product.unit_name} </label>
-                                </div>
-                            </button>
-                        ))}
-                    </div>
+        <div className="p-6">
+            {/* Table Container */}
+            <div className="overflow-x-auto rounded-xl border border-gray-200">
+                <table className="w-full text-left border-collapse">
+                    <thead className="bg-gray-50 text-gray-600 uppercase text-sm">
+                        <tr>
+                            <th className="py-4 px-4 font-semibold">สินค้า</th>
+                            <th className="py-4 px-4 font-semibold text-center">จำนวน</th>
+                            <th className="py-4 px-4 font-semibold text-right">ราคา/ชิ้น</th>
+                            <th className="py-4 px-4 font-semibold text-right">รวม</th>
+                            <th className="py-4 px-4 text-center"></th>
+                        </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-100">
+                        {selected.length === 0 ? (
+                            <tr>
+                                <td colSpan="5" className="text-center py-12 text-gray-400 italic">
+                                    ไม่มีสินค้าในตะกร้า
+                                </td>
+                            </tr>
+                        ) : (
+                            selected.map((item) => (
+                                <tr key={item.product_id} className="hover:bg-blue-50 transition-colors">
+                                    <td className="py-4 px-4 font-medium text-gray-800">{item.product_name}</td>
+                                    <td className="py-4 px-4 text-center text-gray-600">
+                                        <span className="bg-gray-100 px-3 py-1 rounded-full text-sm">
+                                            x{item.quantity}
+                                        </span>
+                                    </td>
+                                    <td className="py-4 px-4 text-right text-gray-600">
+                                        {Number(item.product_price).toLocaleString()} ฿
+                                    </td>
+                                    <td className="py-4 px-4 text-right font-bold text-blue-600">
+                                        {(item.product_price * item.quantity).toLocaleString()} ฿
+                                    </td>
+                                    <td className="py-4 px-4 text-center">
+                                        <button
+                                            onClick={() => handleRemove(item.product_id)}
+                                            className="p-2 text-red-500 hover:bg-red-100 rounded-full transition-all"
+                                            title="ลบสินค้า"
+                                        >
+                                            <IoTrashSharp size={20} />
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))
+                        )}
+                    </tbody>
+                </table>
+            </div>
+
+            {/* Summary Section */}
+            <div className="mt-8 bg-gray-50 rounded-xl p-6 border border-dashed border-gray-300">
+                <div className="flex justify-between items-center">
+                    <span className="text-gray-600 font-medium">ยอดรวมสุทธิ</span>
+                    <span className="text-3xl font-extrabold text-blue-700">
+                        {Number(total).toLocaleString('en-US', { minimumFractionDigits: 2 })} ฿
+                    </span>
                 </div>
             </div>
 
-            <div className="w-125 justify-center bg-white items-center mb-8 pt-8 p-2 rounded-xl shadow-lg sticky">
-                <h1 className="text-2xl text-center font-bold text-blue-700">
-                    <div className='flex items-center justify-center gap-2'>
-                        <TiShoppingCart />ตะกร้าสินค้า
-                    </div>
-                </h1>
-                <div className="flex ml-4 border-collapse rounded-xl p-2 flex-col lg:flex-row gap-8 mt-5 items-center">
-                    <div className="w-full lg:w-80 bg-blue-100 rounded-xl shadow-lg pt-2 px-4 border-l border-blue-200">
-                        รายการสินค้า
-                        <div className='bg-white mt-4 mb-3 rounded-lg'>
-                            <table className="w-full">
-                                <thead>
-                                    <tr>
-                                        <th className="text-left py-2 px-4">สินค้า</th>
-                                        <th className="text-left py-2 px-4">จำนวน</th>
-                                        <th className="text-left py-2 px-4">ราคา</th>
-                                        <th className="text-left py-2 px-4">รวม</th>
-                                    </tr>
-                                </thead>
-                                {selected.length === 0 && (
-                                    <tbody>
-                                        <tr>
-                                            <td colSpan="4" className="text-center py-4">ไม่มีสินค้าในตะกร้า</td>
-                                        </tr>
-                                    </tbody>
-                                )}
-                                <tbody>
-                                    {selected.map(item => (
-                                        <tr key={item.product_id}>
-                                            <td className="text-life-sm  border-b p-2">{item.product_name}</td>
-                                            <td className="py-2 px-4 border-b text-center">x{item.quantity}</td>
-                                            <td className="text-right  border-b">{item.product_price} ฿</td>
-                                            {/* <td className="text-right border-b">{item.product_price * item.quantity} ฿</td> */}
-                                            <td className="text-right border-b"> {totalPrice} ฿</td>
-                                            <td className="text-center border-b">
-                                                <button
-                                                onClick={() => handleRemove(item.product_id)}
-                                                className="text-white px-2 py-1 bg-red-500 rounded-lg hover:bg-red-600 ml-2 mb-2"
-                                                >
-                                                    <IoTrashSharp className='text-xl' />
-                                                </button>
-                                            </td>
-
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <div>
-                    <div className="flex justify-between items-center mt-4 px-4">
-                        <span className="text-lg font-bold">รวม</span>
-                        <span className="text-lg font-bold">{Number(total).toLocaleString('en-US', { minimumFractionDigits: 2 })} ฿</span>
-                    </div>
-                </div>
-
+            {/* Action Buttons */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-8">
                 <button
-                    type="submit"
-                    onClick={() => selected.length > 0 && setIsOpen(true)}
-                    className="rounded-lg font-bold text-sm shadow px-4 py-4 mt-8 w-full"
-                    style={{ backgroundColor: '#4CAF50', color: 'white', cursor: 'pointer' }}
-                    onMouseOver={(e) => {
-                        e.target.style.backgroundColor = '#367c39';
-                    }}
-                    onMouseOut={(e) => {
-                        e.target.style.backgroundColor = '#4CAF50';
-                    }}
-                >
-                    ชำระเงิน
-                </button>
-                <button
-                    onClick={(e) => handleDelete()}
-                    type="submit"
-                    className="rounded-lg font-bold text-sm shadow px-4 py-4 mt-1 w-full"
-                    style={{ backgroundColor: '#f44336', color: 'white', cursor: 'pointer' }}
-                    onMouseOver={(e) => {
-                        e.target.style.backgroundColor = '#d32f2f';
-                    }}
-                    onMouseOut={(e) => {
-                        e.target.style.backgroundColor = '#f44336';
-                    }}
+                    onClick={() => handleDelete()}
+                    className="order-2 sm:order-1 w-full py-4 px-6 rounded-xl font-bold text-gray-500 bg-gray-100 hover:bg-gray-200 transition-all duration-200"
                 >
                     ยกเลิกรายการ
                 </button>
+                <button
+                    onClick={() => selected.length > 0 && setIsOpen(true)}
+                    disabled={selected.length === 0}
+                    className={`order-1 sm:order-2 w-full py-4 px-6 rounded-xl font-bold text-white shadow-lg transition-all duration-200 ${
+                        selected.length > 0 
+                        ? 'bg-green-500 hover:bg-green-600 hover:shadow-green-200 transform hover:-translate-y-0.5' 
+                        : 'bg-gray-300 cursor-not-allowed'
+                    }`}
+                >
+                    ชำระเงิน
+                </button>
             </div>
-            {isOpen && total > 0 && (
-                <div className="fixed inset-0 bg-gray-800 bg-opacity-50 border-black-500 flex justify-center items-center rounded-lg"
-                    style={{ backdropFilter: 'blur(5px)', borderColor: 'black' }}> {/* Changed background opacity */}
-                    <div className="bg-white p-6 rounded-[60px] w-[800px] text-center shadow-lg relative">
-                        <Payment total={total} selected={[selected]} onClose={handleClosePopup} />
-                        {/* <p className='mt-8'>****** ราคารวม : {total} ******</p> */}
-                        <button
-                            onClick={handleClosePopup}
-                            className="absolute top-4 right-6 bg-gray-200 text-gray-600 rounded-full w-8 h-8 text-xl flex items-center justify-center hover:bg-gray-300 transition"
-                        >
-                            x
-                        </button>
-                    </div>
-                </div>
-            )}
-
         </div>
+    </div>
+
+    {/* Payment Modal */}
+    
+    {isOpen && total > 0 && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={handleClosePopup}></div>
+            <div className="bg-white rounded-3xl w-full max-w-3xl overflow-hidden shadow-2xl relative z-10 animate-in fade-in zoom-in duration-300">
+                <button
+                    onClick={handleClosePopup}
+                    className="absolute top-5 right-5 z-20 bg-gray-100 text-gray-500 rounded-full w-10 h-10 flex items-center justify-center hover:bg-gray-200 transition"
+                >
+                    ✕
+                </button>
+                <div className="p-8">
+                    <Payment total={total} selected={selected} onClose={handleClosePopup} />
+                </div>
+            </div>
+        </div>
+    )}
+</div>
     );
 }
 
