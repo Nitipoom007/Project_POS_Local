@@ -239,7 +239,7 @@ function Payment({ total, selected }) {
             billNo: newBillNo,
             paymentStatus: "paid",
             paymentMethod: paymentMethod ? "promptpay" : "cash",
-            paidDate: dateTime.toLocaleDateString("th-TH"),
+            paidDate: dateTime.toLocaleDateString("th-TH-u-ca-gregory").replaceAll("/", "-"),
             paidTime: dateTime.toLocaleTimeString("th-TH"),
             cash: Number(money),
             total: total,
@@ -374,7 +374,7 @@ function Payment({ total, selected }) {
         y += 4;
 
         doc.text(
-            `วันที่: ${dateTime.toLocaleDateString("th-TH")} เวลา: ${dateTime.toLocaleTimeString("th-TH")}`,
+            `วันที่: ${dateTime.toLocaleDateString("th-TH-u-ca-gregory")} เวลา: ${dateTime.toLocaleTimeString("th-TH")}`,
             2,
             y
         );

@@ -12,6 +12,7 @@ function BarChartExample() {
   return (
     <div style={{ textAlign: "center" }}>
       <h2>ยอดขายรายเดือน</h2>
+
       <BarChart width={500} height={300} data={data}>
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="name" />
