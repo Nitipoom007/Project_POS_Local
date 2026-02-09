@@ -36,7 +36,7 @@ function Payment({ total, selected }) {
     };
     const fetchShop = async () => {
         try {
-            const response = await axios.get('http://localhost:5000/api/shop_address');
+            const response = await axios.get('http://localhost:3001/api/shop_address');
             setShopaddress(response.data.data || []);
             // console.log(response.data.data);
         } catch (error) {
@@ -214,10 +214,10 @@ function Payment({ total, selected }) {
             }))
         };
 
-        // console.log("👉 ส่ง billItem:", billItem);
+        console.log("👉 ส่ง billItem:", billItem);
 
         try {
-            const response = await axios.post("http://localhost:5000/api/addbillitem", billItem);
+            const response = await axios.post("http://localhost:3001/api/addbillitem", billItem);
             // console.log("✅ บันทึกข้อมูล BillItem สำเร็จ:", response.data);
         } catch (error) {
             console.error("❌ Error:", error.response?.data || error.message);
@@ -239,15 +239,15 @@ function Payment({ total, selected }) {
             billNo: newBillNo,
             paymentStatus: "paid",
             paymentMethod: paymentMethod ? "promptpay" : "cash",
-            paidDate: dateTime.toLocaleDateString("th-TH-u-ca-gregory").replaceAll("/", "-"),
+            paidDate: dateTime.toISOString().split('T')[0],
             paidTime: dateTime.toLocaleTimeString("th-TH"),
             cash: Number(money),
             total: total,
         }
-        // console.log("ส่ง ReportBill:", reportData);
+        console.log("ส่ง ReportBill:", reportData);
 
         try {
-            const response = await axios.post('http://localhost:5000/api/reportbill', reportData);
+            const response = await axios.post('http://localhost:3001/api/reportbill', reportData);
             // console.log('บันทึกข้อมูลบิลลงใน Report_Bill สำเร็จ:', response.data);
         } catch (error) {
             alert('เกิดข้อผิดพลาดในการบันทึกข้อมูล ReportBill: ' + error.message);

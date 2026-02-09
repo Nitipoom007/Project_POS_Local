@@ -18,7 +18,7 @@ function Report() {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const response = await axios.get('http://localhost:5000/api/showproducts');
+                const response = await axios.get('http://localhost:3001/api/showproducts');
                 setProducts(response.data.data || []);
             } catch (error) {
                 setProducts([]);
@@ -31,7 +31,7 @@ function Report() {
     useEffect(() => {
         const fetchTotalsales = async () => {
             try {
-                const response = await axios.get('http://localhost:5000/api/totalsales');
+                const response = await axios.get('http://localhost:3001/api/totalsales');
                 // console.log("👉 total_sales response:", response.data);
                 setTotalsales(response.data.data || []);
             } catch (error) {
@@ -45,7 +45,7 @@ function Report() {
     useEffect(() => {
         const fetchBill = async () => {
             try {
-                const response = await axios.get('http://localhost:5000/api/report');
+                const response = await axios.get('http://localhost:3001/api/report');
                 setBill(response.data.data || []);
             } catch (error) {
                 setBill([]);
@@ -60,7 +60,7 @@ function Report() {
         setYear(parseInt(year, 10) + 543);
         try {
             const fetchSalesByMonth = async () => {
-                const response = await axios.get(`http://localhost:5000/api/sales_by_month/${month}-${year}`);
+                const response = await axios.get(`http://localhost:3001/api/sales_by_month/${month}-${year}`);
                 console.log("👉 sales_by_month response:", response.data);
                 setTotalsales(response.data.data || []);
 

@@ -17,8 +17,8 @@ function Adduser() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const usersData = {
-      firstname: firstname,
-      lastname: lastname,
+      fname: firstname,
+      lname: lastname,
       username: username,
       password: password,
       address: address,
@@ -27,7 +27,7 @@ function Adduser() {
       status: status
     };
     try {
-      const response = await axios.post('http://localhost:5000/api/addusers', usersData);
+      const response = await axios.post('http://localhost:3001/api/addusers', usersData);
       // alert('บันทึกข้อมูลผู้ใช้สำเร็จ');
       Swal.fire({
                       title: "บันทึกข้อมูลสำเร็จ",

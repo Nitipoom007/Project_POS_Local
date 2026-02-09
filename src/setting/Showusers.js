@@ -19,7 +19,7 @@ function Showusers() {
 
     const fetchUsers = async () => {
         try {
-            const response = await axios.get('http://localhost:5000/api/showusers');
+            const response = await axios.get('http://localhost:3001/api/showusers');
             setUsers(response.data.data || []);
         } catch (error) {
             console.error('Error fetching users:', error);
@@ -65,7 +65,7 @@ function Showusers() {
                             Add user
                         </button>
                     </div>
-                {/* </h3> */}
+                    {/* </h3> */}
                 </div>
                 <table className="min-w-full bg-white" style={{ width: '100%' }}>
                     <thead>
@@ -87,7 +87,7 @@ function Showusers() {
                         {users.map(user => (
                             <tr key={user.user_id}>
                                 {/* <td className="py-2 px-4 border-b">{user.user_id}</td> */}
-                                <td className="py-2 px-4 border-b">{user.user_firstname}</td>
+                                <td className="py-2 px-4 border-b">{user.user_fn}</td>
                                 <td className="py-2 px-4 border-b">{user.user_email}</td>
                                 <td className="py-2 px-4 border-b">{user.user_address}</td>
                                 <td className="py-2 px-4 border-b">{user.user_tel}</td>
@@ -104,9 +104,10 @@ function Showusers() {
 
                                     &nbsp;&nbsp;&nbsp;
 
-                                    <button className="bg-red-500 border-red-700 text-white rounded-lg px-4 py-2"
+                                    <button
+                                        className="bg-red-500 border-red-700 text-white rounded-lg px-4 py-2"
                                         onClick={async () => {
-                                            Swal.fire({
+                                            const result = await Swal.fire({
                                                 title: "Are you sure?",
                                                 text: "You won't be able to revert this!",
                                                 icon: "warning",
@@ -114,42 +115,35 @@ function Showusers() {
                                                 confirmButtonColor: "#3085d6",
                                                 cancelButtonColor: "#d33",
                                                 confirmButtonText: "Yes, delete it!"
-                                            }).then((result) => {
-                                                if (result.isConfirmed) {
-                                                    try {
-                                                        axios.delete(`http://localhost:5000/api/deleteuser/${user.user_id}`);
-                                                        //  fetchProducts(); // ✅ อัปเดตข้อมูลใหม่
-                                                        Swal.fire({
-                                                            title: "Deleted!",
-                                                            text: "Your file has been deleted.",
-                                                            icon: "success"
-                                                        });
-                                                    } catch (error) {
-                                                        console.error('Error deleting product:', error);
-                                                        Swal.fire({
-                                                            title: "Error!",
-                                                            text: "ไม่สามารถลบข้อมูลผู้ใช้งานได้",
-                                                            icon: "error"
-                                                        });
-                                                    }
-                                                    fetchUsers();
-                                                }
                                             });
-                                            // if (window.confirm('คุณต้องการลบผู้ใช้คนนี้หรือไม่?')) {
-                                            //     try {
-                                            //         await axios.delete(`http://localhost:5000/api/deleteuser/${user.user_id}`);
-                                            //         setUsers(prevUsers => prevUsers.filter(u => u.user_id !== user.user_id));
-                                            //         alert('ลบข้อมูลผู้ใช้สำเร็จ');
-                                            //     } catch (error) {
-                                            //         console.error('Error deleting user:', error);
-                                            //         alert('เกิดข้อผิดพลาดในการลบข้อมูลผู้ใช้');
-                                            //     }
-                                            // }
+                                            if (result.isConfirmed) {
+                                                try {
+                                                    await axios.delete(
+                                                        `http://localhost:3001/api/deleteuser/${user.user_id}`
+                                                    );
+
+                                                    Swal.fire({
+                                                        title: "Deleted!",
+                                                        text: "ลบข้อมูลผู้ใช้งานสำเร็จ",
+                                                        icon: "success"
+                                                    });
+
+                                                    fetchUsers(); // ✅ โหลดข้อมูลใหม่หลังลบเสร็จ
+                                                } catch (error) {
+                                                    console.error('Error deleting user:', error);
+                                                    Swal.fire({
+                                                        title: "Error!",
+                                                        text: "ไม่สามารถลบข้อมูลผู้ใช้งานได้",
+                                                        icon: "error"
+                                                    });
+                                                }
+                                            }
                                         }}
-                                        disabled={isOpen} // Disable the button when the popup is open
+                                        disabled={isOpen}
                                     >
                                         <IoTrashSharp className='text-xl' /> {/* Delete button */}
-                                        {console.log(user.user_id)}
+                                        {console.log('User ID:', user.user_id)}
+                                        {console.log('USER OBJECT:', user)}
                                     </button>
 
                                 </td>
@@ -176,7 +170,7 @@ function Showusers() {
                     <div className="fixed inset-0 bg-gray-800 bg-opacity-50 border-black-500 flex justify-center items-center"
                         style={{ backdropFilter: 'blur(5px)', borderColor: 'black' }}> {/* Changed background opacity */}
                         <div className="bg-white p-6 rounded-[60px] w-[800px] text-center shadow-lg relative">
-                           <h2 className='text-2xl font-bold text-black-700'>- เพิ่มข้อมูลผู้ใช้งาน -</h2>
+                            <h2 className='text-2xl font-bold text-black-700'>- เพิ่มข้อมูลผู้ใช้งาน -</h2>
                             <Adduser onClose={handleClosePopup} />
                             {/* <p className='mt-8'>****** UserID : {selectedUser.user_id} ******</p> */}
                             <button

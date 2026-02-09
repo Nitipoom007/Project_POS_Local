@@ -73,7 +73,7 @@ function Product() {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const response = await axios.get('http://localhost:5000/api/showproducts');
+                const response = await axios.get('http://localhost:3001/api/showproducts');
                 setProducts(response.data.data || []);
                 setProductsTemp(response.data.data || []);
             } catch (error) {
@@ -88,8 +88,9 @@ function Product() {
     useEffect(() => {
         const fetchCategory = async () => {
             try {
-                const response = await axios.get('http://localhost:5000/api/category');
+                const response = await axios.get('http://localhost:3001/api/category');
                 setCategory(response.data.data || []);
+                // console.log('data:', response.data.data);
             } catch (error) {
                 console.error('Error fetching category:', error);
             }
@@ -241,10 +242,10 @@ function Product() {
                             // disabled={!!selected.find(p => p.product_id === product.product_id)}
                             >
                                 <div key={product.product_id} className="bg-blue-50 rounded-xl shadow hover:shadow-lg transition p-6 flex flex-col items-center">
-                                    <img
-                                        src={`http://localhost:5000/uploads/${product.image}`}
+                                    {/* <img
+                                        src={`http://localhost:3001/uploads/${product.image}`}
                                         style={{ width: '100%', height: 'auto', objectFit: 'cover', borderRadius: '12px', backgroundColor: 'white', border: '1px solid #e5e7eb' }}
-                                    />
+                                    /> */}
                                     <label >{product.product_name}</label>
                                     {/* <label >รหัส: <span className="font-semibold">{product.product_id}</span></label> */}
                                     <label >{product.product_price} ฿</label>

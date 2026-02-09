@@ -39,8 +39,9 @@ function Input() {
     };
 
     const fetchProducts = useCallback(async (e) => {
+        console.log('Submitting product data:', e);
         try {
-            await axios.post('http://localhost:5000/api/products', e, {
+            await axios.post('http://localhost:3001/api/addproducts', e, {
                 headers: { 'Content-Type': 'multipart/form-data' },
             });
             // alert('บันทึกข้อมูลสินค้าสำเร็จ');
@@ -66,7 +67,7 @@ function Input() {
     // ✅ ดึงหมวดหมู่
     const fetchCategory = useCallback(async () => {
         try {
-            const response = await axios.get('http://localhost:5000/api/category');
+            const response = await axios.get('http://localhost:3001/api/category');
             setCategory(response.data.data || []);
         } catch (error) {
             console.error('Error fetching category:', error);
@@ -76,7 +77,7 @@ function Input() {
     // ✅ ดึงข้อมูลหน่วยสินค้า
     const fetchUnit = useCallback(async () => {
         try {
-            const response = await axios.get('http://localhost:5000/api/unit');
+            const response = await axios.get('http://localhost:3001/api/unit');
             setUnit(response.data.data || []);
         } catch (error) {
             console.error('Error fetching unit:', error);
@@ -132,7 +133,7 @@ function Input() {
                         />
                     </div>
                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    <div className="mb-4 flex flex-col">
+                    {/* <div className="mb-4 flex flex-col">
                         <label className='font-bold text-blue-700 mb-1 h-5'>ไฟล์รูปภาพ</label>
                         <input
                             type="file"
@@ -142,7 +143,7 @@ function Input() {
                             accept="image/*"
                             onChange={(e) => handleChange(e)}
                         />
-                    </div>
+                    </div> */}
                 </div>
                 <div className="flex">
                     <div className="mb-4 flex flex-col mr-2">
@@ -166,7 +167,7 @@ function Input() {
                             style={{ width: '100%', height: '35px', boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)', borderRadius: '4px', padding: '5px' }}
                             // value={date}
                             onChange={(e) => handleChange(e)}
-                            placeholder="ที่อยู่"
+                            placeholder="วันที่เพิ่มสินค้า"
                             required
                             maxLength="100"
                         />

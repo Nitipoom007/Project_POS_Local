@@ -24,7 +24,7 @@ function Stock() {
     // ✅ ดึงสินค้าทั้งหมด
     const fetchProducts = useCallback(async () => {
         try {
-            const response = await axios.get('http://localhost:5000/api/showproducts');
+            const response = await axios.get('http://localhost:3001/api/showproducts');
             setProducts(response.data.data || []);
             setProductsTemp(response.data.data || []);
             // await fetchProducts();
@@ -36,7 +36,7 @@ function Stock() {
     // ✅ ดึงหมวดหมู่
     const fetchCategory = useCallback(async () => {
         try {
-            const response = await axios.get('http://localhost:5000/api/category');
+            const response = await axios.get('http://localhost:3001/api/category');
             setCategory(response.data.data || []);
         } catch (error) {
             console.error('Error fetching category:', error);
@@ -163,7 +163,7 @@ function Stock() {
                     <thead>
                         <tr className="bg-blue-100 border-b-2 border-blue-200">
                             {/* <th className="py-3 px-4 text-blue-700 font-semibold border-b-2 border-blue-200">barcode</th> */}
-                            <th className="py-3 px-4 text-blue-700 font-semibold border-b-2 border-blue-200">รูปสินค้า</th>
+                            {/* <th className="py-3 px-4 text-blue-700 font-semibold border-b-2 border-blue-200">รูปสินค้า</th> */}
                             <th className="py-3 px-4 text-blue-700 font-semibold border-b-2 border-blue-200">ชื่อสินค้า</th>
                             <th className="py-3 px-4 text-blue-700 font-semibold border-b-2 border-blue-200">จำนวนสินค้า</th>
                             {/* <th className="py-3 px-4 text-blue-700 font-semibold border-b-2 border-blue-200">หน่วยนับ</th> */}
@@ -193,14 +193,14 @@ function Stock() {
                                     </div>
                                 </td> */}
                                 {/* <td className="py-2 px-4 text-center border-b">{product.product_name}</td> */}
-                                <td>
+                                {/* <td>
                                     <img
-                                        src={`http://localhost:5000/uploads/${product.image}`}
+                                        src={`http://localhost:3001/uploads/${product.image}`}
                                         className="w-24 h-40 object-cover rounded  border-b"
                                     />
-                                </td>
+                                </td> */}
                                 <td className="py-2 px-4 text-center border-b">{product.product_name}</td>
-                                <td className="py-2 px-4 text-right border-b">{product.product_quantity} {product.unit_name}</td>
+                                <td className="py-2 px-4 text-center border-b">{product.product_quantity} {product.unit_name}</td>
                                 <td className="py-2 px-4 text-right border-b">{product.product_cost} ฿</td>
                                 <td className="py-2 px-4 text-right border-b">{product.product_price} ฿</td>
                                 <td className="py-2 px-4 text-center border-b">{product.product_detail}</td>
@@ -228,7 +228,7 @@ function Stock() {
                                             }).then((result) => {
                                                 if (result.isConfirmed) {
                                                     try {
-                                                         axios.delete(`http://localhost:5000/api/deleteproduct_product/${product.product_id}`);
+                                                         axios.delete(`http://localhost:3001/api/deleteproduct/${product.product_id}`);
                                                         //  fetchProducts(); // ✅ อัปเดตข้อมูลใหม่
                                                         Swal.fire({
                                                             title: "Deleted!",
@@ -266,7 +266,7 @@ function Stock() {
                                             // });
                                             // if (window.confirm('คุณต้องการลบสินค้านี้หรือไม่?')) {
                                             //     try {
-                                            //         await axios.delete(`http://localhost:5000/api/deleteproduct_product/${product.product_id}`);
+                                            //         await axios.delete(`http://localhost:3001/api/deleteproduct_product/${product.product_id}`);
                                             //         await fetchProducts(); // ✅ อัปเดตข้อมูลใหม่
                                             //     } catch (error) {
                                             //         console.error('Error deleting product:', error);
