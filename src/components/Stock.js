@@ -10,7 +10,7 @@ import { FaCartPlus } from "react-icons/fa";
 import { MdSettings } from 'react-icons/md'
 
 function Stock() {
-    const [selectedUser, setSelectedUser] = useState(null);
+    const [selected, setSelected] = useState(null);
     const [products, setProducts] = useState([]);
     const [barcode, setBarcode] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
@@ -22,6 +22,8 @@ function Stock() {
     const handleClosePopup = async () => {
         setIsOpen(false);
         setIsOpenedit(false);
+        setSelected(null);
+        console.log('Popup closed, selected reset to:', selected);
         await fetchProducts();
     }
 
@@ -54,8 +56,8 @@ function Stock() {
     }, [fetchProducts, fetchCategory]);
 
     const handleEditClick = (productId) => {
-        setSelectedUser(products.find(p => p.product_id === productId));
-        // console.log('Selected User:', user);
+        setSelected(productId);
+        console.log('Selected Product:', selected);
         setIsOpen(true);
         setIsOpenedit(true);
     };
@@ -310,7 +312,7 @@ function Stock() {
                 {isOpenedit && (
                     <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center" style={{ backdropFilter: 'blur(5px)' }}>
                         <div className="bg-white p-6 rounded-[60px] w-[800px] text-center shadow-lg relative">
-                            <Editproducts />
+                            <Editproducts pdId={selected} onClose={handleClosePopup} />
                             <button
                                 onClick={handleClosePopup}
                                 className="absolute top-4 right-6 bg-gray-200 text-gray-600 rounded-full w-8 h-8 text-xl flex items-center justify-center hover:bg-gray-300 transition"
