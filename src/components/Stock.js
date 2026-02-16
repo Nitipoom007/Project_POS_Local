@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import InputProduct from './Inputproduct';
+import Editproducts from './Editproduct';
 import '../output.css';
 import Barcode from 'react-barcode';
 import Swal from 'sweetalert2';
@@ -9,15 +10,18 @@ import { FaCartPlus } from "react-icons/fa";
 import { MdSettings } from 'react-icons/md'
 
 function Stock() {
+    const [selectedUser, setSelectedUser] = useState(null);
     const [products, setProducts] = useState([]);
     const [barcode, setBarcode] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
     const [category, setCategory] = useState([]);
     const [productsTemp, setProductsTemp] = useState([]);
     const [isOpen, setIsOpen] = useState(false);
+    const [isOpenedit, setIsOpenedit] = useState(false);
 
     const handleClosePopup = async () => {
         setIsOpen(false);
+        setIsOpenedit(false);
         await fetchProducts();
     }
 
@@ -48,6 +52,13 @@ function Stock() {
         fetchProducts();
         fetchCategory();
     }, [fetchProducts, fetchCategory]);
+
+    const handleEditClick = (productId) => {
+        setSelectedUser(products.find(p => p.product_id === productId));
+        // console.log('Selected User:', user);
+        setIsOpen(true);
+        setIsOpenedit(true);
+    };
 
     return (
         <div className="w-full mx-auto bg-white rounded-lg shadow-lg mt-8">
@@ -208,7 +219,8 @@ function Stock() {
                                 <td className="py-2 px-4 text-center border-b">
                                     <button
                                         className='bg-gray-200 text-gray-800 rounded-lg px-4 py-2'
-                                    // onClick={() => setIsOpen(true)}
+                                        onClick={() => handleEditClick(product.product_id)}
+                                        disabled={isOpen} // Disable the button when the popup is open
                                     >
                                         <IoPencil className='text-xl' /> {/* Edit */}
 
@@ -286,6 +298,19 @@ function Stock() {
                     <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center" style={{ backdropFilter: 'blur(5px)' }}>
                         <div className="bg-white p-6 rounded-[60px] w-[800px] text-center shadow-lg relative">
                             <InputProduct onAdded={fetchProducts} />
+                            <button
+                                onClick={handleClosePopup}
+                                className="absolute top-4 right-6 bg-gray-200 text-gray-600 rounded-full w-8 h-8 text-xl flex items-center justify-center hover:bg-gray-300 transition"
+                            >
+                                x
+                            </button>
+                        </div>
+                    </div>
+                )}
+                {isOpenedit && (
+                    <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center" style={{ backdropFilter: 'blur(5px)' }}>
+                        <div className="bg-white p-6 rounded-[60px] w-[800px] text-center shadow-lg relative">
+                            <Editproducts />
                             <button
                                 onClick={handleClosePopup}
                                 className="absolute top-4 right-6 bg-gray-200 text-gray-600 rounded-full w-8 h-8 text-xl flex items-center justify-center hover:bg-gray-300 transition"

@@ -16,6 +16,7 @@ function Payment({ total, selected }) {
     const [cashMethod, setCashMethod] = useState(false);
     const [dateTime, setDateTime] = useState(new Date());
     const [shopaddress, setShopaddress] = useState({});
+    // const [isOpen1, setIsOpen1] = useState(true);
     // const navigate = useNavigate();
 
     // setProduct(money => [...money, ...selected]);
@@ -94,6 +95,7 @@ function Payment({ total, selected }) {
             BillItem(newBillNo);
             ReportBill(newBillNo);
             generatePDF(updatedProducts, newBillNo, shopaddress);
+            // setIsOpen1(false);
             // ใส่ฟังก์ชันบันทึกการชำระเงินตรงนี้
         } else {
             Swal.fire({
@@ -133,6 +135,7 @@ function Payment({ total, selected }) {
         BillItem(newBillNo);
         ReportBill(newBillNo);
         generatePDF(updatedProducts, newBillNo, shopaddress);
+        // setIsOpen1(false);
         // console.log(updatedProducts);
     }
 

@@ -20,7 +20,7 @@ function PieChartExample() {
   useEffect(() => {
     const fetchData = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/bill_items');
+      const response = await axios.get('http://localhost:3001/api/bill_item');
       const result = await response.data;
       setData(result.data || []);
     }
@@ -37,7 +37,7 @@ function PieChartExample() {
       <h2>สัดส่วนการขายสินค้า</h2>
       <PieChart width={400} height={400}>
         <Pie
-          data={data.map(item => ({ name: item.name, value: item.value }))}
+          data={data.map(item => ({ name: item.name, value: Number(item.value) }))}
           cx="50%"
           cy="50%"
           labelLine={false}

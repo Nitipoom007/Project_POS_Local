@@ -101,58 +101,58 @@ function Product() {
     // เพิ่มสินค้าเข้า selected
     const handleSelect = (product) => {
 
-    // 1️⃣ เช็ค stock ก่อนทำอะไรทั้งหมด
-    if (product.product_quantity <= 0) {
-        Swal.fire({
-            title: "สินค้าหมด",
-            icon: "warning",
-            showConfirmButton: false,
-            timer: 1500,
-        });
-        return; // ❗ หยุดการทำงานทันที
-    }
-
-    // 2️⃣ เช็คว่ามีสินค้าในตะกร้าแล้วไหม
-    const existingProduct = selected.find(
-        p => p.product_id === product.product_id
-    );
-
-    // 3️⃣ กรณีมีสินค้าอยู่แล้ว
-    if (existingProduct) {
-
-        // 3.1 เช็คว่าเกิน stock หรือยัง
-        if (existingProduct.quantity >= product.product_quantity) {
+        // 1️⃣ เช็ค stock ก่อนทำอะไรทั้งหมด
+        if (product.product_quantity <= 0) {
             Swal.fire({
                 title: "สินค้าหมด",
                 icon: "warning",
                 showConfirmButton: false,
                 timer: 1500,
             });
-            return;
+            return; // ❗ หยุดการทำงานทันที
         }
 
-        // 3.2 เพิ่มจำนวน
-        setSelected(prev =>
-            prev.map(p =>
-                p.product_id === product.product_id
-                    ? { ...p, quantity: p.quantity + 1 }
-                    : p
-            )
+        // 2️⃣ เช็คว่ามีสินค้าในตะกร้าแล้วไหม
+        const existingProduct = selected.find(
+            p => p.product_id === product.product_id
         );
 
-        setTotal(prev => prev + product.product_price);
+        // 3️⃣ กรณีมีสินค้าอยู่แล้ว
+        if (existingProduct) {
 
-    } else {
+            // 3.1 เช็คว่าเกิน stock หรือยัง
+            if (existingProduct.quantity >= product.product_quantity) {
+                Swal.fire({
+                    title: "สินค้าหมด",
+                    icon: "warning",
+                    showConfirmButton: false,
+                    timer: 1500,
+                });
+                return;
+            }
 
-        // 4️⃣ กรณียังไม่มีในตะกร้า
-        setSelected(prev => [
-            ...prev,
-            { ...product, quantity: 1 }
-        ]);
+            // 3.2 เพิ่มจำนวน
+            setSelected(prev =>
+                prev.map(p =>
+                    p.product_id === product.product_id
+                        ? { ...p, quantity: p.quantity + 1 }
+                        : p
+                )
+            );
 
-        setTotal(prev => prev + product.product_price);
-    }
-};
+            setTotal(prev => prev + product.product_price);
+
+        } else {
+
+            // 4️⃣ กรณียังไม่มีในตะกร้า
+            setSelected(prev => [
+                ...prev,
+                { ...product, quantity: 1 }
+            ]);
+
+            setTotal(prev => prev + product.product_price);
+        }
+    };
 
     // ลบสินค้าออกจาก selected
     const handleRemove = (product_id) => {
@@ -186,166 +186,216 @@ function Product() {
 
 
     return (
-        <div className="flex w-full mx-auto p-0 gap-5 mt-8 rounded-lg">
-            <div className="text-center bg-white w-full justify-center items-center mb-8 px-8 pt-8 py-8 rounded-xl shadow-lg">
-                <h1 className="text-2xl font-bold text-blue-700">รายการสินค้า</h1>
-                <div className='flex'>
-                    <div className='flex gap-5 mt-5'>
-                        <input
-                            type="text"
-                            className="flex px-3 py-2 rounded-lg w-56 border border-gray-300 mb-2"
-                            placeholder="   ค้นหาสินค้า"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            onKeyDown={(e) => {
-                                if (e.key === 'Enter') {
-                                    const filteredProducts = products.filter(product =>
-                                        product.product_name.toLowerCase().includes(searchTerm.toLowerCase())
-                                    );
-                                    setProductsTemp(filteredProducts);
-                                    setSearchTerm('');
-                                }
-                            }}
-                        />
-                    </div>
-                    <div className='flex gap-5 mt-5 '>
-                        <select
-                            className="border px-3 py-2 rounded-lg border-gray-300 mb-2 mx-2 focus:outline-none focus:ring-2 focus:ring-blue-300"
-                            // onClick={fetchCategory}
-                            onChange={(e) => {
-                                const selectedCategory = e.target.value;
-                                if (selectedCategory) {
-                                    const filteredProducts = products.filter(product =>
-                                        product.category_id === Number(selectedCategory)
-                                    );
-                                    setProductsTemp(filteredProducts);
-                                } else {
-                                    setProductsTemp(products);
-                                }
-                            }}
-                        >
-                            <option value="">ประเภทสินค้า</option>
-                            {category.map((c) => (
-                                <option key={c.category_id} value={c.category_id}>
-                                    {c.category_name}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-                </div>
-                <div className="flex justify-center ml-4 mt-1 border-collapse rounded-xl shadow p-0 flex-col lg:flex-row gap-8">
+        // <div className="flex w-full mx-auto p-0 gap-5 mt-8 rounded-lg">
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 p-8">
-                        {productsTemp.map(product => (
-                            <button
-                                onClick={() => handleSelect(product)}
-                            // disabled={!!selected.find(p => p.product_id === product.product_id)}
-                            >
-                                <div key={product.product_id} className="bg-blue-50 rounded-xl shadow hover:shadow-lg transition p-6 flex flex-col items-center">
-                                    {/* <img
-                                        src={`http://localhost:3001/uploads/${product.image}`}
-                                        style={{ width: '100%', height: 'auto', objectFit: 'cover', borderRadius: '12px', backgroundColor: 'white', border: '1px solid #e5e7eb' }}
-                                    /> */}
-                                    <label >{product.product_name}</label>
-                                    {/* <label >รหัส: <span className="font-semibold">{product.product_id}</span></label> */}
-                                    <label >{product.product_price} ฿</label>
-                                    <label >{product.product_detail}</label>
-                                    <label className='text-right text-sm'> มี {product.product_quantity} {product.unit_name} </label>
-                                </div>
-                            </button>
-                        ))}
-                    </div>
-                </div>
-            </div>
+        //     <div className="w-125 justify-center bg-white items-center mb-8 pt-8 p-2 rounded-xl shadow-lg sticky">
+        //         <h1 className="text-2xl text-center font-bold text-blue-700">
+        //             <div className='flex items-center justify-center gap-2'>
+        //                 <TiShoppingCart />ตะกร้าสินค้า
+        //             </div>
+        //         </h1>
+        //         <div className="flex ml-4 border-collapse rounded-xl p-2 flex-col lg:flex-row gap-8 mt-5 items-center">
+        //             <div className="w-full lg:w-80 bg-blue-100 rounded-xl shadow-lg pt-2 px-4 border-l border-blue-200">
+        //                 รายการสินค้า
+        //                 <div className='bg-white mt-4 mb-3 rounded-lg'>
+        //                     <table className="w-full">
+        //                         <thead>
+        //                             <tr>
+        //                                 <th className="text-left py-2 px-4">สินค้า</th>
+        //                                 <th className="text-left py-2 px-4">จำนวน</th>
+        //                                 <th className="text-left py-2 px-4">ราคา</th>
+        //                                 <th className="text-left py-2 px-4">รวม</th>
+        //                             </tr>
+        //                         </thead>
+        //                         {selected.length === 0 && (
+        //                             <tbody>
+        //                                 <tr>
+        //                                     <td colSpan="4" className="text-center py-4">ไม่มีสินค้าในตะกร้า</td>
+        //                                 </tr>
+        //                             </tbody>
+        //                         )}
+        //                         <tbody>
+        //                             {selected.map(item => (
+        //                                 <tr key={item.product_id}>
+        //                                     <td className="text-life-sm  border-b p-2">{item.product_name}</td>
+        //                                     <td className="py-2 px-4 border-b text-center">x{item.quantity}</td>
+        //                                     <td className="text-right  border-b">{item.product_price} ฿</td>
+        //                                     {/* <td className="text-right border-b">{item.product_price * item.quantity} ฿</td> */}
+        //                                     <td className="text-right border-b"> {totalPrice} ฿</td>
+        //                                     <td className="text-center border-b">
+        //                                         <button
+        //                                         onClick={() => handleRemove(item.product_id)}
+        //                                         className="text-white px-2 py-1 bg-red-500 rounded-lg hover:bg-red-600 ml-2 mb-2"
+        //                                         >
+        //                                             <IoTrashSharp className='text-xl' />
+        //                                         </button>
+        //                                     </td>
 
-            <div className="w-125 justify-center bg-white items-center mb-8 pt-8 p-2 rounded-xl shadow-lg sticky">
-                <h1 className="text-2xl text-center font-bold text-blue-700">
-                    <div className='flex items-center justify-center gap-2'>
-                        <TiShoppingCart />ตะกร้าสินค้า
-                    </div>
-                </h1>
-                <div className="flex ml-4 border-collapse rounded-xl p-2 flex-col lg:flex-row gap-8 mt-5 items-center">
-                    <div className="w-full lg:w-80 bg-blue-100 rounded-xl shadow-lg pt-2 px-4 border-l border-blue-200">
-                        รายการสินค้า
-                        <div className='bg-white mt-4 mb-3 rounded-lg'>
-                            <table className="w-full">
-                                <thead>
+        //                                 </tr>
+        //                             ))}
+        //                         </tbody>
+        //                     </table>
+        //                 </div>
+        //             </div>
+        //         </div>
+
+        //         <div>
+        //             <div className="flex justify-between items-center mt-4 px-4">
+        //                 <span className="text-lg font-bold">รวม</span>
+        //                 <span className="text-lg font-bold">{Number(total).toLocaleString('en-US', { minimumFractionDigits: 2 })} ฿</span>
+        //             </div>
+        //         </div>
+
+        //         <button
+        //             type="submit"
+        //             onClick={() => selected.length > 0 && setIsOpen(true)}
+        //             className="rounded-lg font-bold text-sm shadow px-4 py-4 mt-8 w-full"
+        //             style={{ backgroundColor: '#4CAF50', color: 'white', cursor: 'pointer' }}
+        //             onMouseOver={(e) => {
+        //                 e.target.style.backgroundColor = '#367c39';
+        //             }}
+        //             onMouseOut={(e) => {
+        //                 e.target.style.backgroundColor = '#4CAF50';
+        //             }}
+        //         >
+        //             ชำระเงิน
+        //         </button>
+        //         <button
+        //             onClick={(e) => handleDelete()}
+        //             type="submit"
+        //             className="rounded-lg font-bold text-sm shadow px-4 py-4 mt-1 w-full"
+        //             style={{ backgroundColor: '#f44336', color: 'white', cursor: 'pointer' }}
+        //             onMouseOver={(e) => {
+        //                 e.target.style.backgroundColor = '#d32f2f';
+        //             }}
+        //             onMouseOut={(e) => {
+        //                 e.target.style.backgroundColor = '#f44336';
+        //             }}
+        //         >
+        //             ยกเลิกรายการ
+        //         </button>
+        //     </div>
+            // {isOpen && total > 0 && (
+            //     <div className="fixed inset-0 bg-gray-800 bg-opacity-50 border-black-500 flex justify-center items-center rounded-lg"
+            //         style={{ backdropFilter: 'blur(5px)', borderColor: 'black' }}> {/* Changed background opacity */}
+            //         <div className="bg-white p-6 rounded-[60px] w-[800px] text-center shadow-lg relative">
+            //             <Payment total={total} selected={[selected]} onClose={handleClosePopup} />
+            //             {/* <p className='mt-8'>****** ราคารวม : {total} ******</p> */}
+            //             <button
+            //                 onClick={handleClosePopup}
+            //                 className="absolute top-4 right-6 bg-gray-200 text-gray-600 rounded-full w-8 h-8 text-xl flex items-center justify-center hover:bg-gray-300 transition"
+            //             >
+            //                 x
+            //             </button>
+            //         </div>
+            //     </div>
+            // )}
+
+        // </div>
+        
+        <div className="flex flex-col lg:flex-row w-full max-w-5xl mx-auto p-4 gap-6 mt-8">
+            {/* ส่วนตะกร้าสินค้าหลัก */}
+            <div className="flex-1 bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
+                <div className="bg-blue-600 p-6">
+                    <h1 className="text-2xl font-bold text-white flex items-center justify-center gap-3">
+                        <TiShoppingCart className="text-3xl" />
+                        ตะกร้าสินค้า
+                    </h1>
+                </div>
+
+                <div className="p-6">
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-left border-separate border-spacing-y-2">
+                            <thead>
+                                <tr className="text-gray-500 text-sm uppercase tracking-wider">
+                                    <th className="px-4 py-2">สินค้า</th>
+                                    <th className="px-4 py-2 text-center">จำนวน</th>
+                                    <th className="px-4 py-2 text-right">ราคา</th>
+                                    <th className="px-4 py-2 text-right">รวม</th>
+                                    <th className="px-4 py-2 text-center">จัดการ</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {selected.length === 0 ? (
                                     <tr>
-                                        <th className="text-left py-2 px-4">สินค้า</th>
-                                        <th className="text-left py-2 px-4">จำนวน</th>
-                                        <th className="text-left py-2 px-4">ราคา</th>
-                                        <th className="text-left py-2 px-4">รวม</th>
+                                        <td colSpan="5" className="py-12 text-center">
+                                            <div className="flex flex-col items-center text-gray-400">
+                                                <TiShoppingCart size={48} className="mb-2 opacity-20" />
+                                                <p>ไม่มีสินค้าในตะกร้าของคุณ</p>
+                                            </div>
+                                        </td>
                                     </tr>
-                                </thead>
-                                {selected.length === 0 && (
-                                    <tbody>
-                                        <tr>
-                                            <td colSpan="4" className="text-center py-4">ไม่มีสินค้าในตะกร้า</td>
-                                        </tr>
-                                    </tbody>
-                                )}
-                                <tbody>
-                                    {selected.map(item => (
-                                        <tr key={item.product_id}>
-                                            <td className="text-life-sm  border-b p-2">{item.product_name}</td>
-                                            <td className="py-2 px-4 border-b text-center">x{item.quantity}</td>
-                                            <td className="text-right  border-b">{item.product_price} ฿</td>
-                                            {/* <td className="text-right border-b">{item.product_price * item.quantity} ฿</td> */}
-                                            <td className="text-right border-b"> {totalPrice} ฿</td>
-                                            <td className="text-center border-b">
+                                ) : (
+                                    selected.map((item) => (
+                                        <tr key={item.product_id} className="bg-gray-50 hover:bg-blue-50 transition-colors rounded-lg group">
+                                            <td className="px-4 py-4 font-medium text-gray-700 rounded-l-xl">
+                                                {item.product_name}
+                                            </td>
+                                            <td className="px-4 py-4 text-center">
+                                                <span className="bg-white px-3 py-1 rounded-full border border-gray-200 text-sm font-semibold">
+                                                    x{item.quantity}
+                                                </span>
+                                            </td>
+                                            <td className="px-4 py-4 text-right text-gray-600">
+                                                {Number(item.product_price).toLocaleString()} ฿
+                                            </td>
+                                            <td className="px-4 py-4 text-right font-bold text-blue-600">
+                                                {(item.product_price * item.quantity).toLocaleString()} ฿
+                                            </td>
+                                            <td className="px-4 py-4 text-center rounded-r-xl">
                                                 <button
-                                                onClick={() => handleRemove(item.product_id)}
-                                                className="text-white px-2 py-1 bg-red-500 rounded-lg hover:bg-red-600 ml-2 mb-2"
+                                                    onClick={() => handleRemove(item.product_id)}
+                                                    className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-full transition-all"
                                                 >
-                                                    <IoTrashSharp className='text-xl' />
+                                                    <IoTrashSharp size={20} />
                                                 </button>
                                             </td>
-
                                         </tr>
-                                    ))}
-                                </tbody>
-                            </table>
+                                    ))
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            {/* ส่วนสรุปยอดเงิน (Side Panel) */}
+            <div className="w-full lg:w-80 space-y-4">
+                <div className="bg-white p-6 rounded-2xl shadow-xl border border-gray-100 sticky top-8">
+                    <h2 className="text-lg font-bold text-gray-800 mb-4 border-b pb-2">สรุปรายการ</h2>
+
+                    <div className="space-y-3">
+                        <div className="flex justify-between text-gray-600">
+                            <span>จำนวนทั้งหมด</span>
+                            <span>{selected.reduce((acc, curr) => acc + curr.quantity, 0)} ชิ้น</span>
+                        </div>
+                        <div className="flex justify-between items-end pt-4 border-t border-dashed">
+                            <span className="text-gray-800 font-bold">ยอดชำระสุทธิ</span>
+                            <span className="text-2xl font-black text-blue-600">
+                                {Number(total).toLocaleString('en-US', { minimumFractionDigits: 2 })} ฿
+                            </span>
                         </div>
                     </div>
-                </div>
 
-                <div>
-                    <div className="flex justify-between items-center mt-4 px-4">
-                        <span className="text-lg font-bold">รวม</span>
-                        <span className="text-lg font-bold">{Number(total).toLocaleString('en-US', { minimumFractionDigits: 2 })} ฿</span>
+                    <div className="mt-8 space-y-3">
+                        <button
+                            onClick={() => selected.length > 0 && setIsOpen(true)}
+                            className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-4 rounded-xl shadow-lg shadow-green-100 transition-all active:scale-95 flex justify-center items-center gap-2"
+                        >
+                            ชำระเงิน
+                        </button>
+                        <button
+                            onClick={() => handleDelete()}
+                            className="w-full bg-white hover:bg-red-50 text-red-500 font-semibold py-3 rounded-xl border border-red-100 transition-all active:scale-95"
+                        >
+                            ยกเลิกรายการ
+                        </button>
                     </div>
                 </div>
-
-                <button
-                    type="submit"
-                    onClick={() => selected.length > 0 && setIsOpen(true)}
-                    className="rounded-lg font-bold text-sm shadow px-4 py-4 mt-8 w-full"
-                    style={{ backgroundColor: '#4CAF50', color: 'white', cursor: 'pointer' }}
-                    onMouseOver={(e) => {
-                        e.target.style.backgroundColor = '#367c39';
-                    }}
-                    onMouseOut={(e) => {
-                        e.target.style.backgroundColor = '#4CAF50';
-                    }}
-                >
-                    ชำระเงิน
-                </button>
-                <button
-                    onClick={(e) => handleDelete()}
-                    type="submit"
-                    className="rounded-lg font-bold text-sm shadow px-4 py-4 mt-1 w-full"
-                    style={{ backgroundColor: '#f44336', color: 'white', cursor: 'pointer' }}
-                    onMouseOver={(e) => {
-                        e.target.style.backgroundColor = '#d32f2f';
-                    }}
-                    onMouseOut={(e) => {
-                        e.target.style.backgroundColor = '#f44336';
-                    }}
-                >
-                    ยกเลิกรายการ
-                </button>
             </div>
-            {isOpen && total > 0 && (
+
+            {/* Modal ชำระเงิน */}
+             {isOpen && total > 0 && (
                 <div className="fixed inset-0 bg-gray-800 bg-opacity-50 border-black-500 flex justify-center items-center rounded-lg"
                     style={{ backdropFilter: 'blur(5px)', borderColor: 'black' }}> {/* Changed background opacity */}
                     <div className="bg-white p-6 rounded-[60px] w-[800px] text-center shadow-lg relative">

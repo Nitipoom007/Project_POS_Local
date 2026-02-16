@@ -32,6 +32,7 @@ function Showusers() {
 
     const handleEditClick = (user) => {
         setSelectedUser(user);
+        // console.log('Selected User:', user);
         setIsOpen(true);
     };
 
@@ -96,7 +97,7 @@ function Showusers() {
 
                                     <button
                                         className="bg-gray-200 border-gray-300 text-gray-800 rounded-lg px-4 py-2"
-                                        onClick={() => handleEditClick(user)}
+                                        onClick={() => handleEditClick(user.user_id)}
                                         disabled={isOpen} // Disable the button when the popup is open
                                     >
                                         <IoPencil className='text-xl' /> {/* Edit button */}
@@ -155,7 +156,7 @@ function Showusers() {
                     <div className="fixed inset-0 bg-gray-800 bg-opacity-50 border-black-500 flex justify-center items-center"
                         style={{ backdropFilter: 'blur(5px)', borderColor: 'black' }}> {/* Changed background opacity */}
                         <div className="bg-white p-6 rounded-[60px] w-[800px] text-center shadow-lg relative">
-                            <Editusers user={selectedUser} onClose={handleClosePopup} />
+                            <Editusers userId={selectedUser} onClose={handleClosePopup} />
                             <p className='mt-8'>****** UserID : {selectedUser.user_id} ******</p>
                             <button
                                 onClick={handleClosePopup}
