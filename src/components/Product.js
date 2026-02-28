@@ -399,7 +399,7 @@ function Product() {
                 <div className="fixed inset-0 bg-gray-800 bg-opacity-50 border-black-500 flex justify-center items-center rounded-lg"
                     style={{ backdropFilter: 'blur(5px)', borderColor: 'black' }}> {/* Changed background opacity */}
                     <div className="bg-white p-6 rounded-[60px] w-[800px] text-center shadow-lg relative">
-                        <Payment total={total} selected={[selected]} onClose={handleClosePopup} />
+                        <Payment total={total} selected={[selected]} user_id={selected.user_id} onClose={handleClosePopup} />
                         {/* <p className='mt-8'>****** ราคารวม : {total} ******</p> */}
                         <button
                             onClick={handleClosePopup}
