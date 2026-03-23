@@ -69,18 +69,29 @@ function Navbar2() {
                             {open && (
                                 <div className="ml-12 mt-2 flex flex-col gap-2 pb-2">
 
-                                    <button className="flex items-center gap-2 p-2 hover:text-teal-500 transition">
+                                    {/* <button className="flex items-center gap-2 p-2 hover:text-teal-500 transition"> */}
                                         <span className="w-2 h-2 bg-teal-500 rounded-full"></span>
                                         <Link to="/home/Setting" className={`flex items-center gap-4 w-full py-3 px-8 rounded-r-2xl font-semibold transition ${isActive('/home/Setting') ? 'bg-blue-900' : 'hover:bg-blue-800'
                                             }`}>
                                                 รายชื่อผู้ใช้งาน
                                         </Link>
-                                    </button>
+                                    {/* </button> */}
 
-                                    <button className="flex items-center gap-2 p-2 hover:text-teal-500 transition">
+                                    {/* <button className="flex items-center gap-2 p-2 hover:text-teal-500 transition"> */}
                                         <span className="w-2 h-2 bg-teal-500 rounded-full" ></span>
-                                        ประวัติการเข้าใช้ระบบ
-                                    </button>
+                                        <Link to="/home/Setting2" className={`flex items-center gap-4 w-full py-3 px-8 rounded-r-2xl font-semibold transition ${isActive('/home/Setting2') ? 'bg-blue-900' : 'hover:bg-blue-800'
+                                            }`}>
+                                                ข้อมูลร้านค้า
+                                        </Link>
+                                    {/* </button> */}
+
+                                    {/* <button className="flex items-center gap-2 p-2 hover:text-teal-500 transition"> */}
+                                        <span className="w-2 h-2 bg-teal-500 rounded-full" ></span>
+                                        <Link to="/home/Setting3" className={`flex items-center gap-4 w-full py-3 px-8 rounded-r-2xl font-semibold transition ${isActive('/home/Setting3') ? 'bg-blue-900' : 'hover:bg-blue-800'
+                                            }`}>
+                                                ข้อมูลการชำระเงิน
+                                        </Link>
+                                    {/* </button> */}
 
                                 </div>
                             )}

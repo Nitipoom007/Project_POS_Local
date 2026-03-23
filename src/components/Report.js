@@ -4,6 +4,7 @@ import '../output.css';
 import { VscGraphLine } from "react-icons/vsc";
 import PieChartExample from "../chart/Pai";
 import BarChartExample from "../chart/Bar";
+import ProfittoMonth from "./ProfittoMonth";
 
 function Report() {
     const [products, setProducts] = useState([]);
@@ -11,11 +12,16 @@ function Report() {
     const [totalsales, setTotalsales] = useState([]);
     const [profit, setProfit] = useState([]);
     const [bill, setBill] = useState([]);
-    const [monthlySales, setMonthlySales] = useState([]);
-    const [date, setDate] = useState(new Date());
-    const [month, setMonth] = useState(date.getMonth() + 1);
-    const [year, setYear] = useState(date.getFullYear() + 543);
+    const [dateTime, setDateTime] = useState(new Date());
+    const [rptoday, setRptoday] = useState([]);
+    const now = new Date();
+    const formatted = now.toISOString().slice(0, 10);
 
+    console.log(formatted); // 2026-03-20
+
+    useEffect(() => {
+        console.log("👉 rptoday updated:", rptoday);
+    }, [rptoday]);
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -30,66 +36,62 @@ function Report() {
         fetchProducts();
     }, []);
 
-    useEffect(() => {
-        const fetchTotalsales = async () => {
-            try {
-                const response = await axios.get('http://localhost:3001/api/total_sales');
-                // console.log("👉 total_sales response:", response.data);
-                setTotalsales(response.data.data || []);
-            } catch (error) {
-                setTotalsales([]);
-                // console.error('Error fetching total sales:', error);
-            }
-        };
-        fetchTotalsales();
-    }, []);
+    // useEffect(() => {
+    //     const fetchTotalsales = async () => {
+    //         try {
+    //             const response = await axios.get('http://localhost:3001/api/total_sales');
+    //             // console.log("👉 total_sales response:", response.data);
+    //             setTotalsales(response.data.data || []);
+    //         } catch (error) {
+    //             setTotalsales([]);
+    //             // console.error('Error fetching total sales:', error);
+    //         }
+    //     };
+    //     fetchTotalsales();
+    // }, []);
+
+    // useEffect(() => {
+    //     const fetchBill = async () => {
+    //         try {
+    //             const response = await axios.get('http://localhost:3001/api/report');
+    //             setBill(response.data.data || []);
+    //         } catch (error) {
+    //             setBill([]);
+    //         }
+    //     };
+    //     fetchBill();
+    // }, []);
+
+    // useEffect(() => {
+    //     const fetchProfit = async () => {
+    //         try {
+    //             const response = await axios.get('http://localhost:3001/api/profit');
+    //             setProfit(response.data.profit || 0);
+    //         } catch (error) {
+    //             setProfit(0);
+    //         }
+    //     };
+    //     fetchProfit();
+    // }, []);
 
     useEffect(() => {
-        const fetchBill = async () => {
-            try {
-                const response = await axios.get('http://localhost:3001/api/report');
-                setBill(response.data.data || []);
-            } catch (error) {
-                setBill([]);
-            }
-        };
-        fetchBill();
-    }, []);
-
-    useEffect(() => {
-        const fetchProfit = async () => {
-            try {
-                const response = await axios.get('http://localhost:3001/api/profit');
-                setProfit(response.data.data?.profit ?? 0);
-                // console.log("👉 profit response:", response.data);
-            } catch (error) {
-                setProfit(0);
-                // console.error('Error fetching profit:', error);
-            }
-        };
-        fetchProfit();
-    }, []);
-
-
-    const handleMonthChange = async (e) => {
-        const [year, month] = e.target.value.split("-");
-
-        setMonth(parseInt(month, 10));
-        setYear(parseInt(year, 10) + 543); // ไว้แสดง พ.ศ.
-
+    const fetchMonthly = async () => {
         try {
-            const response = await axios.get(
-                `http://localhost:3001/api/sales_by_month/${year}-${month}`
-            );
-
-            // console.log("👉 sales_by_month response:", response.data);
-            setMonthlySales(response.data.data || []);
+            const now = new Date();
+            const date = now.toISOString().slice(0, 10); // 🔥 ได้ YYYY-MM
+            const response = await axios.get(`http://localhost:3001/api/sales_by_day/${date}`);
+            setRptoday(response.data.data || []);
+            console.log(response.data);
+            // console.log('date:', date);
 
         } catch (error) {
-            console.error("Error fetching sales:", error);
+            console.error(error);
+            setRptoday([]);
         }
     };
 
+    fetchMonthly();
+}, []);
 
     return (
         <div className="max-w-7xl mx-auto px-4">
@@ -102,7 +104,15 @@ function Report() {
                         </div>
                         Report
                     </h1>
+                    <h1 className=" text-2xl font-bold gap-2">
+                        {/* <div className="text-4xl text-blue-700 mt-1">
+                            <VscGraphLine />
+                        </div> */}
+                        <p>{dateTime.toLocaleDateString("th-TH")}</p>
+                    </h1>
+                    {/* <p>วันที่: {dateTime.toLocaleDateString("th-TH")}</p> */}
                     <div className="flex flex-wrap mt-4">
+
                         <div className="w-65 h-24 mt-8 rounded-lg shadow-lg text-right border-gray-300 mx-2 mb-4 p-3">
                             <h1 className="text-xl">สินค้าทั้งหมดภายในร้าน</h1>
                             <div className="text-2xl font-bold ">
@@ -112,40 +122,30 @@ function Report() {
                         <div className="w-65 h-24 mt-8 rounded-lg shadow-lg text-right border-gray-300 mx-2 mb-4 p-3">
                             <h1 className="text-xl">รายการบิลทั้งหมด</h1>
                             <div className="text-2xl font-bold ">
-                                <p>จำนวนบิล: {bill.length}</p>
+                                <p>จำนวนบิล: {rptoday[0]?.total_bill || 0}</p>
                             </div>
                         </div>
                         <div className="w-65 h-24 mt-8 rounded-lg shadow-lg text-right border-gray-300 mx-2 mb-4 p-3">
                             <h1 className="text-xl">ยอดขายรวม</h1>
                             <div className="text-2xl font-bold ">
-                                <p>{Number(totalsales.totalsales).toLocaleString('en-US', { minimumFractionDigits: 2 })} ฿</p>
+                                <p>{Number(rptoday[0]?.total || 0).toLocaleString('en-US', { minimumFractionDigits: 2 })} ฿</p>
                             </div>
                         </div>
                         <div className="w-65 h-24 mt-8 rounded-lg shadow-lg text-right border-gray-300 mx-2 mb-4 p-3 ">
                             <h1 className="text-xl">กำไรหลักจากหักค่าใช้จ่าย</h1>
                             <div className="text-2xl font-bold text-white border border-black stocks-black-5 bg-green-400 p-2 rounded-lg">
-                                <p>{Number(profit).toLocaleString('en-US', { minimumFractionDigits: 2 })} ฿</p>
-                                {/* <p>{totalsales.map(item => item.total_sum - item.total_cost).reduce((acc, curr) => acc + curr, 0)}</p> */}
+                                <p>{Number(rptoday[0]?.profit || 0).toLocaleString('en-US', { minimumFractionDigits: 2 })} ฿</p>
                             </div>
                         </div>
                     </div>
-
-                    <input
-                        type="month"
-                        className="mb-4 p-2 border border-gray-300 rounded"
-                        onChange={(e) => {
-                            handleMonthChange(e);
-                            // const [year, month] = e.target.value.split("-");
-                            // setMonth(parseInt(month, 10));
-                            // setYear(parseInt(year, 10) + 543);
-                            // console.log("Selected month:", month, "Selected year:", year);
-                        }}
-                    />
 
                 </div>
                 <div className="flex flex-wrap mt-4">
                     <div className="mb-8 px-8">
                         <PieChartExample />
+                    </div>
+                    <div className="mb-8 px-8">
+                        <ProfittoMonth />
                     </div>
                     {/* <div className="mb-8 px-8">
                     <BarChartExample />

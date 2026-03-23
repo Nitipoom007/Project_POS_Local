@@ -10,16 +10,16 @@ import autoTable from "jspdf-autotable";
 import "./font/THSarabunNew-normal.js";
 
 function Payment({ total, selected }) {
-    // const { id } = useParams();
     const [product, setProduct] = useState(selected || []);
     const [paymentMethod, setPaymentMethod] = useState(false);
     const [cashMethod, setCashMethod] = useState(false);
     const [dateTime, setDateTime] = useState(new Date());
     const [shopaddress, setShopaddress] = useState({});
-    // const [isOpen1, setIsOpen1] = useState(true);
-    // const navigate = useNavigate();
-
-    // setProduct(money => [...money, ...selected]);
+    const userId = localStorage.getItem("user_id");
+    const [promptpays, setPromptpays] = useState(true);
+    const [cash, setCash] = useState(true);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const [qrImage, setQrImage] = useState("");
     const [money, setMoney] = useState(0);
     const [head, setHead] = useState("ชำระเงิน")
@@ -39,7 +39,6 @@ function Payment({ total, selected }) {
         try {
             const response = await axios.get('http://localhost:3001/api/shop_address');
             setShopaddress(response.data.data || []);
-            // console.log(response.data.data);
         } catch (error) {
             console.error('Error fetching shop data:', error);
         }
@@ -47,6 +46,38 @@ function Payment({ total, selected }) {
     useEffect(() => {
         fetchShop();
     }, []);
+
+    useEffect(() => {
+        const fetchPaymentStatus = async () => {
+            try {
+    
+                const promptpayRes = await fetch('http://localhost:3001/api/getpromptpay');
+                const promptpayData = await promptpayRes.json();
+    
+                const promptpayStatus = promptpayData.data[0].pm_status;
+    
+                setPromptpays(promptpayStatus === 1);
+    
+    
+                const cashRes = await fetch('http://localhost:3001/api/getcash');
+                const cashData = await cashRes.json();
+    
+                const cashStatus = cashData.data[0].pm_status;
+    
+                setCash(cashStatus === 1);
+    
+            } catch (error) {
+                console.error(error);
+            } finally {
+                setLoading(false);
+            }
+        };
+    
+        fetchPaymentStatus();
+    
+    }, []);
+
+    
 
     const handlePayment = (method) => {
         // Handle payment logic here
@@ -123,8 +154,6 @@ function Payment({ total, selected }) {
             paidDate: dateTime.toLocaleDateString("th-TH"),
             paidTime: dateTime.toLocaleTimeString("th-TH")
         }));
-        // console.log(updatedProducts);
-        // console.log(shopaddress[0].shop_name);
         Swal.fire({
             title: "ชำระเงินเรียบร้อย",
             icon: "success",
@@ -135,8 +164,6 @@ function Payment({ total, selected }) {
         BillItem(newBillNo);
         ReportBill(newBillNo);
         generatePDF(updatedProducts, newBillNo, shopaddress);
-        // setIsOpen1(false);
-        // console.log(updatedProducts);
     }
 
     const [billNo, setBillNo] = useState("");
@@ -166,7 +193,6 @@ function Payment({ total, selected }) {
             setProduct(flat);
         }
     }, [selected]);
-
 
     // useEffect(() => {
     //     if (selected && selected.length > 0) {
@@ -210,7 +236,7 @@ function Payment({ total, selected }) {
 
         const billItem = {
             billNo: newBillNo,
-            user_id: product[0]?.user_id ?? 1,   // ✅ ใส่ default user_id = 1
+            user_id: userId || null,
             products: product.map(item => ({
                 product_id: item.product_id,
                 quantity: item.quantity
@@ -225,6 +251,15 @@ function Payment({ total, selected }) {
         } catch (error) {
             console.error("❌ Error:", error.response?.data || error.message);
             alert("เกิดข้อผิดพลาดในการบันทึก billItem: " + (error.response?.data?.error || error.message));
+        }
+
+        try {
+            const response = await axios.post('http://localhost:3001/api/update_stock', billItem);
+            // console.log('อัปเดตสต็อกสำเร็จ:', response.data);
+        }
+        catch (error) {
+            console.error('❌ Error updating stock:', error.response?.data || error.message);
+            alert('เกิดข้อผิดพลาดในการอัปเดตสต็อก: ' + (error.response?.data?.error || error.message));
         }
     };
 
@@ -388,6 +423,7 @@ function Payment({ total, selected }) {
 
         doc.text("-------------------------------------------------------------", centerX, y, { align: "center" });
         y += 3;
+        
 
         // ===== TABLE HEADER (เหมือนต้นแบบ) =====
         doc.setFontSize(8);
@@ -396,7 +432,7 @@ function Payment({ total, selected }) {
 
         doc.text("-----------------------------------------------------------------", centerX, y, { align: "center" });
         y += 2;
-
+    
         // ===== ITEMS =====
         autoTable(doc, {
             startY: y,
@@ -449,7 +485,12 @@ function Payment({ total, selected }) {
         // ===== FOOTER =====
         doc.text("--------------------------------", centerX, y, { align: "center" });
         y += 4;
-
+        if(paymentMethod == true){
+            doc.text("แสกนเพื่อชำระเงิน", centerX, y, { align: "center" });
+            y += 2;
+            qrImage && doc.addImage(qrImage, "PNG", 11, y, 20, 20);
+            y += qrImage ? 25 : 0;
+        }
         doc.text("ขอบคุณที่ใช้บริการ", centerX, y, { align: "center" });
 
         const string = doc.output('bloburl'); // สร้าง URL ของ PDF
@@ -472,23 +513,55 @@ function Payment({ total, selected }) {
 
             {paymentMethod === false && cashMethod === false && (
                 <div className='flex justify-center grid-cols-2 gap-4 mt-4 border-collapse rounded-lg shadow-lg p-8'>
+                    
+                    {promptpays === true && (
+                        <div>
+                            <button className='bg-blue-50 rounded-xl shadow hover:shadow-lg transition p-8 flex flex-col items-center'
+                                onClick={() => handlePayment(total)}
+                            >
+                                <span className='mt-2'>PromptPay</span>
+                                <span className='text-green-600 text-xs mt-1'>เปิดใช้งาน</span>
+                            </button>
+                        </div>
+                    )}
+                    {promptpays === false && (
                     <div>
-                        <button className='bg-blue-50 rounded-xl shadow hover:shadow-lg transition p-8 flex flex-col items-center'
-                            onClick={() => handlePayment(total)}
+                        <text className='bg-blue-50 rounded-xl shadow hover:shadow-lg transition p-8 flex flex-col items-center'
+                            // onClick={() => handlePayment(total)}
                         >
                             <span className='mt-2'>PromptPay</span>
-                        </button>
+                            <span className='text-red-600 text-xs mt-1'>ไม่สามารถใช้ได้</span>
+                        </text>
                     </div>
-
+                    )}
+                    {cash === true && (
+                        <div>
+                            <button className='bg-blue-50 rounded-xl shadow hover:shadow-lg transition p-8 flex flex-col items-center'
+                                onClick={() => handleCash()}
+                            >
+                                <span className='mt-2'>เงินสด</span>
+                                <span className='text-green-600 text-xs mt-1'>เปิดใช้งาน</span>
+                            </button>
+                        </div>
+                    )}
+                    {cash === false && (
                     <div>
-                        <button className='bg-blue-50 rounded-xl shadow hover:shadow-lg transition p-8 flex flex-col items-center'
-                            onClick={() => handleCash()}
+                        <text className='bg-blue-50 rounded-xl shadow hover:shadow-lg transition p-8 flex flex-col items-center'
+                            // onClick={() => handleCash()}
                         >
                             <span className='mt-2'>เงินสด</span>
-                        </button>
+                            <span className='text-red-600 text-xs mt-1'>ไม่สามารถใช้ได้</span>
+                        </text>
                     </div>
+                    )}
                 </div>
             )}
+
+            {/* {promptpays === false && (
+                <div className='mt-8 text-center'>
+                    <h2 className='text-xl font-bold mb-4'>ขออภัย ไม่มีวิธีชำระเงินในขณะนี้</h2>
+                </div>
+            )} */}
 
             {paymentMethod === true && (
                 <div className="mt-8 text-center">
@@ -519,6 +592,7 @@ function Payment({ total, selected }) {
                     </button>
                 </div>
             )}
+            
 
             {cashMethod === true && (
                 <div className="mt-8 border-gray-300 rounded-lg shadow-sm">

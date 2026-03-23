@@ -11,13 +11,16 @@ function Product() {
     const [productsTemp, setProductsTemp] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selected, setSelected] = useState([]);
-    const [searchTerm, setSearchTerm] = useState('');
-    const [barcode, setBarcode] = useState('');
+    // const [searchTerm, setSearchTerm] = useState('');
+    // const [barcode, setBarcode] = useState('');
     const [category, setCategory] = useState([]);
     const [total, setTotal] = useState(0);
     const [totalPrice, setTotalPrice] = useState(0);
     const [isOpen, setIsOpen] = useState(false);
     const [barcodeBuffer, setBarcodeBuffer] = useState('');
+    // const [view, setView] = useState("cart");
+    // const [promptpay, setPromptpay] = useState(true);
+    // const [cash, setCash] = useState(true);
 
 
     useEffect(() => {
@@ -28,7 +31,7 @@ function Product() {
             if (['INPUT', 'TEXTAREA'].includes(e.target.tagName)) return;
 
             // เมื่อ scanner ส่ง Enter
-            if (e.key === 'Enter') {
+            if (e.key === 'Enter' && barcodeBuffer.length > 0) {
                 if (barcodeBuffer.length > 0) {
                     const product = products.find(
                         p => String(p.product_barcode) === barcodeBuffer
@@ -275,24 +278,24 @@ function Product() {
         //             ยกเลิกรายการ
         //         </button>
         //     </div>
-            // {isOpen && total > 0 && (
-            //     <div className="fixed inset-0 bg-gray-800 bg-opacity-50 border-black-500 flex justify-center items-center rounded-lg"
-            //         style={{ backdropFilter: 'blur(5px)', borderColor: 'black' }}> {/* Changed background opacity */}
-            //         <div className="bg-white p-6 rounded-[60px] w-[800px] text-center shadow-lg relative">
-            //             <Payment total={total} selected={[selected]} onClose={handleClosePopup} />
-            //             {/* <p className='mt-8'>****** ราคารวม : {total} ******</p> */}
-            //             <button
-            //                 onClick={handleClosePopup}
-            //                 className="absolute top-4 right-6 bg-gray-200 text-gray-600 rounded-full w-8 h-8 text-xl flex items-center justify-center hover:bg-gray-300 transition"
-            //             >
-            //                 x
-            //             </button>
-            //         </div>
-            //     </div>
-            // )}
+        // {isOpen && total > 0 && (
+        //     <div className="fixed inset-0 bg-gray-800 bg-opacity-50 border-black-500 flex justify-center items-center rounded-lg"
+        //         style={{ backdropFilter: 'blur(5px)', borderColor: 'black' }}> {/* Changed background opacity */}
+        //         <div className="bg-white p-6 rounded-[60px] w-[800px] text-center shadow-lg relative">
+        //             <Payment total={total} selected={[selected]} onClose={handleClosePopup} />
+        //             {/* <p className='mt-8'>****** ราคารวม : {total} ******</p> */}
+        //             <button
+        //                 onClick={handleClosePopup}
+        //                 className="absolute top-4 right-6 bg-gray-200 text-gray-600 rounded-full w-8 h-8 text-xl flex items-center justify-center hover:bg-gray-300 transition"
+        //             >
+        //                 x
+        //             </button>
+        //         </div>
+        //     </div>
+        // )}
 
         // </div>
-        
+
         <div className="flex flex-col lg:flex-row w-full max-w-5xl mx-auto p-4 gap-6 mt-8">
             {/* ส่วนตะกร้าสินค้าหลัก */}
             <div className="flex-1 bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
@@ -386,7 +389,7 @@ function Product() {
                         </button>
                         <button
                             onClick={() => handleDelete()}
-                            className="w-full bg-white hover:bg-red-50 text-red-500 font-semibold py-3 rounded-xl border border-red-100 transition-all active:scale-95"
+                            className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-3 rounded-xl border border-red-100 transition-all active:scale-95"
                         >
                             ยกเลิกรายการ
                         </button>
@@ -395,7 +398,7 @@ function Product() {
             </div>
 
             {/* Modal ชำระเงิน */}
-             {isOpen && total > 0 && (
+            {isOpen && total > 0 && (
                 <div className="fixed inset-0 bg-gray-800 bg-opacity-50 border-black-500 flex justify-center items-center rounded-lg"
                     style={{ backdropFilter: 'blur(5px)', borderColor: 'black' }}> {/* Changed background opacity */}
                     <div className="bg-white p-6 rounded-[60px] w-[800px] text-center shadow-lg relative">

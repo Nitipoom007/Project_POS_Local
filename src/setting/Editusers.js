@@ -16,28 +16,28 @@ function Editusers({ userId, onClose }) {
 
     // โหลดข้อมูลผู้ใช้
     useEffect(() => {
-    if (!userId) {
-        setLoading(false);
-        return;
-    }
-
-    const fetchUser = async () => {
-        try {
-            const response = await axios.get(`http://localhost:3001/api/getuser/${userId}`);
-            const userData = response.data.data;
-
-            setUsername(userData.user_name);
-            setEmail(userData.user_email);
-            setPhone(userData.user_tel);
-        } catch (error) {
-            console.error('Error fetching user:', error);
-        } finally {
+        if (!userId) {
             setLoading(false);
+            return;
         }
-    };
 
-    fetchUser();
-}, [userId]);
+        const fetchUser = async () => {
+            try {
+                const response = await axios.get(`http://localhost:3001/api/getuser/${userId}`);
+                const userData = response.data.data;
+
+                setUsername(userData.user_name);
+                setEmail(userData.user_email);
+                setPhone(userData.user_tel);
+            } catch (error) {
+                console.error('Error fetching user:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchUser();
+    }, [userId]);
 
 
 
@@ -62,22 +62,22 @@ function Editusers({ userId, onClose }) {
             setPassword('');
             onClose(); // Close the popup after successful update
             Swal.fire({
-                            title: "อัปเดตข้อมูลสำเร็จ",
-                            icon: "success",
-                            showCancelButton: false,
-                            timer: 1500,
-                            draggable: true
-                        });
+                title: "อัปเดตข้อมูลสำเร็จ",
+                icon: "success",
+                showCancelButton: false,
+                timer: 1500,
+                draggable: true
+            });
         } catch (error) {
             console.error('Error updating user:', error);
             // alert('เกิดข้อผิดพลาด');
             Swal.fire({
-                            title: 'เกิดข้อผิดพลาด: ' + error.message,
-                            icon: "error",
-                            showCancelButton: false,
-                            timer: 1500,
-                            draggable: true
-                        });
+                title: 'เกิดข้อผิดพลาด: ' + error.message,
+                icon: "error",
+                showCancelButton: false,
+                timer: 1500,
+                draggable: true
+            });
         }
     };
 
@@ -102,7 +102,7 @@ function Editusers({ userId, onClose }) {
                         type="text"
                         value={username}
                         readOnly
-                        className="w-full h-[40px] border rounded px-3 bg-gray-100 cursor-not-allowed"
+                        className="border border-gray-300 rounded-md py-2 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                 </div>
 
@@ -115,7 +115,7 @@ function Editusers({ userId, onClose }) {
                         type="text"
                         value={email}
                         readOnly
-                        className="w-full h-[40px] border rounded px-3 bg-gray-100 cursor-not-allowed"
+                        className="border border-gray-300 rounded-md py-2 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                 </div>
 
@@ -129,7 +129,7 @@ function Editusers({ userId, onClose }) {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         placeholder="กรอกรหัสผ่านใหม่ (ถ้าไม่เปลี่ยนให้เว้นว่าง)"
-                        className="w-full h-[40px] border rounded px-3"
+                        className="border border-gray-300 rounded-md py-2 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                 </div>
 
@@ -146,18 +146,23 @@ function Editusers({ userId, onClose }) {
                             setPhone(value);
                         }}
                         maxLength="10"
-                        className="w-full h-[40px] border rounded px-3"
+                        className="border border-gray-300 rounded-md py-2 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                 </div>
-
-                <div className="flex justify-end">
+                <button
+                    type="submit"
+                    className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                    บันทึกการแก้ไข
+                </button>
+                {/* <div className="flex justify-end space-x-4">
                     <button
                         type="submit"
                         className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-6 rounded"
                     >
                         บันทึกข้อมูล
                     </button>
-                </div>
+                </div> */}
             </form>
         </div>
     );

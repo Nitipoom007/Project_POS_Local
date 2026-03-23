@@ -15,8 +15,11 @@ function Login() {
         try {
             const response = await axios.post('http://localhost:3001/api/userslogin', { username, password });
             if (response.data && response.data.resultuser) {
+
+                localStorage.setItem('user_id', response.data.resultuser.user_id);   // ✅ เพิ่มบรรทัดนี้
                 localStorage.setItem('userRole', response.data.resultuser.user_status);
                 localStorage.setItem('userFirstName', response.data.resultuser.user_firstname);
+                console.log(response.data.resultuser);
                 navigate('/Home');
             } else {
                 alert('เข้าสู่ระบบไม่สำเร็จ');
