@@ -94,6 +94,19 @@ function Input() {
         <form onSubmit={handleSubmit} encType="multipart/form-data">
             <h2 className='text-2xl font-bold text-black-700'>- เพิ่มรายการสินค้า -</h2>
             <div className="container bg-white rounded-xl shadow-lg p-8 mx-auto ">
+                <div className="flex " style={{ width: '100%' }}>
+                    <div className="mb-4 flex flex-col mr-2">
+                        <label className='font-bold text-blue-700 mb-1 h-5 '>รหัสสินค้า</label>
+                        <input
+                            type="text"
+                            name="barcode"
+                            style={{ width: '200%', height: '35px', boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)', borderRadius: '4px', padding: '5px' }}
+                            onChange={(e) => handleChange(e)}
+                            placeholder="กรุณากรอกรหัสสินค้า"
+                            required
+                        />
+                    </div>
+                </div>
                 <div className="flex" style={{ width: '100%' }}>
                     <div className="mb-4 flex flex-col mr-2">
                         <label className='font-bold text-blue-700 mb-1 h-5'>ชื่อสินค้า</label>

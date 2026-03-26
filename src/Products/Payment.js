@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+// import { useParams, useNavigate } from 'react-router-dom';
 import QRCode from "qrcode";
 import promptpay from 'promptpay-qr';
 import logo from './img/prompt-pay-logo.png';
 import Swal from 'sweetalert2';
 import axios from 'axios';
-import jspdf, { jsPDF } from 'jspdf';
+import { jsPDF } from 'jspdf';
 import autoTable from "jspdf-autotable";
 import "./font/THSarabunNew-normal.js";
 
@@ -19,7 +19,7 @@ function Payment({ total, selected }) {
     const [promptpays, setPromptpays] = useState(true);
     const [cash, setCash] = useState(true);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+    // const [error, setError] = useState(null);
     const [qrImage, setQrImage] = useState("");
     const [money, setMoney] = useState(0);
     const [head, setHead] = useState("ชำระเงิน")
@@ -485,7 +485,7 @@ function Payment({ total, selected }) {
         // ===== FOOTER =====
         doc.text("--------------------------------", centerX, y, { align: "center" });
         y += 4;
-        if(paymentMethod == true){
+        if(paymentMethod){
             doc.text("แสกนเพื่อชำระเงิน", centerX, y, { align: "center" });
             y += 2;
             qrImage && doc.addImage(qrImage, "PNG", 11, y, 20, 20);
@@ -526,12 +526,12 @@ function Payment({ total, selected }) {
                     )}
                     {promptpays === false && (
                     <div>
-                        <text className='bg-blue-50 rounded-xl shadow hover:shadow-lg transition p-8 flex flex-col items-center'
+                        <div className='bg-blue-50 rounded-xl shadow hover:shadow-lg transition p-8 flex flex-col items-center'
                             // onClick={() => handlePayment(total)}
                         >
                             <span className='mt-2'>PromptPay</span>
                             <span className='text-red-600 text-xs mt-1'>ไม่สามารถใช้ได้</span>
-                        </text>
+                        </div>
                     </div>
                     )}
                     {cash === true && (
@@ -569,7 +569,7 @@ function Payment({ total, selected }) {
                     {/* ตรงนี้คุณใส่ QR Code หรือรายละเอียดการจ่าย */}
                     <img src={qrImage} alt="QR Code" className="mx-auto w-64 h-64" />
                     <div className='flex justify-center items-center'>
-                        <img src={logo}
+                        <img src={logo} alt="PromptPay Logo" className="mx-auto mt-4"
                             style={{ height: '70px', objectFit: 'cover' }}
                         />
                     </div>
