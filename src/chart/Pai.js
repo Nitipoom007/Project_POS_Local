@@ -20,7 +20,7 @@ function PieChartExample() {
   useEffect(() => {
     const fetchData = async () => {
     try {
-      const response = await axios.get('http://localhost:3001/api/bill_item');
+      const response = await axios.get('https://projectposserver-production.up.railway.app/api/bill_item');
       const result = await response.data;
       setData(result.data || []);
     }
