@@ -27,7 +27,7 @@ function Adduser() {
       status: status
     };
     try {
-      const response = await axios.post('http://localhost:3001/api/addusers', usersData);
+      const response = await axios.post('https://projectposserver-production.up.railway.app/api/addusers', usersData);
       // alert('บันทึกข้อมูลผู้ใช้สำเร็จ');
       Swal.fire({
                       title: "บันทึกข้อมูลสำเร็จ",

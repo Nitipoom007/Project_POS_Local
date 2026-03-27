@@ -16,7 +16,7 @@ function Shopdata() {
 
     const fetchShopdata = async () => {
         try {
-            const response = await axios.get('http://localhost:3001/api/shop_address');
+            const response = await axios.get('https://projectposserver-production.up.railway.app/api/shop_address');
             console.log('Shop data fetched:', response.data);
             setShopData(response.data.data || []);
         } catch (error) {

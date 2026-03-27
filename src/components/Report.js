@@ -26,7 +26,7 @@ function Report() {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const response = await axios.get('http://localhost:3001/api/showproducts');
+                const response = await axios.get('https://projectposserver-production.up.railway.app/api/showproducts');
                 setProducts(response.data.data || []);
             } catch (error) {
                 setProducts([]);
@@ -79,7 +79,7 @@ function Report() {
         try {
             const now = new Date();
             const date = now.toISOString().slice(0, 10); // 🔥 ได้ YYYY-MM
-            const response = await axios.get(`http://localhost:3001/api/sales_by_day/${date}`);
+            const response = await axios.get(`https://projectposserver-production.up.railway.app/api/sales_by_day/${date}`);
             setRptoday(response.data.data || []);
             console.log(response.data);
             // console.log('date:', date);

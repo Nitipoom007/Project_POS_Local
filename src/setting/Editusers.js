@@ -23,7 +23,7 @@ function Editusers({ userId, onClose }) {
 
         const fetchUser = async () => {
             try {
-                const response = await axios.get(`http://localhost:3001/api/getuser/${userId}`);
+                const response = await axios.get(`https://projectposserver-production.up.railway.app/api/getuser/${userId}`);
                 const userData = response.data.data;
 
                 setUsername(userData.user_name);
@@ -57,7 +57,7 @@ function Editusers({ userId, onClose }) {
         };
 
         try {
-            await axios.put(`http://localhost:3001/api/updateuser/${userId}`, updatedData);
+            await axios.put(`https://projectposserver-production.up.railway.app/api/updateuser/${userId}`, updatedData);
             // alert('อัปเดตข้อมูลสำเร็จ');
             setPassword('');
             onClose(); // Close the popup after successful update

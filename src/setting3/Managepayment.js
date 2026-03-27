@@ -72,7 +72,7 @@ function Managepayment() {
     const fetchPaymentStatus = async () => {
         try {
 
-            const promptpayRes = await fetch('http://localhost:3001/api/getpromptpay');
+            const promptpayRes = await fetch('https://projectposserver-production.up.railway.app/api/getpromptpay');
             const promptpayData = await promptpayRes.json();
 
             const promptpayStatus = promptpayData.data[0].pm_status;
@@ -80,7 +80,7 @@ function Managepayment() {
             setPromptpay(promptpayStatus === 1);
 
 
-            const cashRes = await fetch('http://localhost:3001/api/getcash');
+            const cashRes = await fetch('https://projectposserver-production.up.railway.app/api/getcash');
             const cashData = await cashRes.json();
 
             const cashStatus = cashData.data[0].pm_status;
@@ -135,7 +135,7 @@ function Managepayment() {
 
     const updatePromptpay = async (status) => {
         try {
-            await axios.put('http://localhost:3001/api/updatepromptpay', {
+            await axios.put('https://projectposserver-production.up.railway.app/api/updatepromptpay', {
                 status: status
             });
             console.log("PromptPay updated:", status);
@@ -145,7 +145,7 @@ function Managepayment() {
     };
     const updateCash = async (status) => {
         try {
-            await axios.put('http://localhost:3001/api/updatecash', {
+            await axios.put('https://projectposserver-production.up.railway.app/api/updatecash', {
                 status: status
             });
             console.log("Cash updated:", status);

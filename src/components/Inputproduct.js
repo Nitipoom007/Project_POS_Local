@@ -41,7 +41,7 @@ function Input() {
     const fetchProducts = useCallback(async (e) => {
         console.log('Submitting product data:', e);
         try {
-            await axios.post('http://localhost:3001/api/addproducts', e, {
+            await axios.post('https://projectposserver-production.up.railway.app/api/addproducts', e, {
                 headers: { 'Content-Type': 'multipart/form-data' },
             });
             // alert('บันทึกข้อมูลสินค้าสำเร็จ');
@@ -67,7 +67,7 @@ function Input() {
     // ✅ ดึงหมวดหมู่
     const fetchCategory = useCallback(async () => {
         try {
-            const response = await axios.get('http://localhost:3001/api/category');
+            const response = await axios.get('https://projectposserver-production.up.railway.app/api/category');
             setCategory(response.data.data || []);
         } catch (error) {
             console.error('Error fetching category:', error);
@@ -77,7 +77,7 @@ function Input() {
     // ✅ ดึงข้อมูลหน่วยสินค้า
     const fetchUnit = useCallback(async () => {
         try {
-            const response = await axios.get('http://localhost:3001/api/unit');
+            const response = await axios.get('https://projectposserver-production.up.railway.app/api/unit');
             setUnit(response.data.data || []);
         } catch (error) {
             console.error('Error fetching unit:', error);

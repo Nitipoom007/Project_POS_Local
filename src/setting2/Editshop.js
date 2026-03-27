@@ -18,7 +18,7 @@ function Editshop({ shopID,onClose }) {
         }
         const fetchShop = async () => {
             try {
-                const response = await axios.get(`http://localhost:3001/api/getshop/${shopID}`);
+                const response = await axios.get(`https://projectposserver-production.up.railway.app/api/getshop/${shopID}`);
                 const shopData = response.data.data;
                 setShopName(shopData.shop_name);
                 setShopAddress(shopData.shop_address);
@@ -46,7 +46,7 @@ function Editshop({ shopID,onClose }) {
             shop_tel: shopTel
         };
         try {
-            await axios.put(`http://localhost:3001/api/updateshop/${shopID}`, updatedData);
+            await axios.put(`https://projectposserver-production.up.railway.app/api/updateshop/${shopID}`, updatedData);
             Swal.fire({
                 icon: 'success',
                 title: 'แก้ไขข้อมูลร้านค้าสำเร็จ',

@@ -21,7 +21,7 @@ function EditProduct({ pdId, onClose }) {
     // ✅ ดึงข้อมูลสินค้าตัวเดียว
     const fetchProduct = useCallback(async () => {
         try {
-            const res = await axios.get(`http://localhost:3001/api/getproduct/${productId}`);
+            const res = await axios.get(`https://projectposserver-production.up.railway.app/api/getproduct/${productId}`);
             const data = res.data.data;
 
             setForm({
@@ -54,7 +54,7 @@ function EditProduct({ pdId, onClose }) {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await axios.put(`http://localhost:3001/api/updateproduct/${productId}`, {
+            await axios.put(`https://projectposserver-production.up.railway.app/api/updateproduct/${productId}`, {
                 price: form.price,
                 cost: form.cost,
                 quantity: form.quantity

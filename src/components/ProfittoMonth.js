@@ -25,7 +25,7 @@ function ProfittoMonth() {
         try {
             setLoading(true);
             const response = await axios.get(
-                `http://localhost:3001/api/sales_by_month/${selectedYear}-${selectedMonth}`
+                `https://projectposserver-production.up.railway.app/api/sales_by_month/${selectedYear}-${selectedMonth}`
             );
             setMonthlySales(response.data.data || []);
             // console.log("👉 Sales by month response:", response.data);

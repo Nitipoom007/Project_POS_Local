@@ -19,7 +19,7 @@ function Showusers() {
 
     const fetchUsers = async () => {
         try {
-            const response = await axios.get('http://localhost:3001/api/showusers');
+            const response = await axios.get('https://projectposserver-production.up.railway.app/api/showusers');
             setUsers(response.data.data || []);
         } catch (error) {
             console.error('Error fetching users:', error);
@@ -118,7 +118,7 @@ function Showusers() {
                                             if (result.isConfirmed) {
                                                 try {
                                                     await axios.delete(
-                                                        `http://localhost:3001/api/deleteuser/${user.user_id}`
+                                                        `https://projectposserver-production.up.railway.app/api/deleteuser/${user.user_id}`
                                                     );
 
                                                     Swal.fire({

@@ -37,7 +37,7 @@ function Payment({ total, selected }) {
     };
     const fetchShop = async () => {
         try {
-            const response = await axios.get('http://localhost:3001/api/shop_address');
+            const response = await axios.get('https://projectposserver-production.up.railway.app/api/shop_address');
             setShopaddress(response.data.data || []);
         } catch (error) {
             console.error('Error fetching shop data:', error);
@@ -51,7 +51,7 @@ function Payment({ total, selected }) {
         const fetchPaymentStatus = async () => {
             try {
     
-                const promptpayRes = await fetch('http://localhost:3001/api/getpromptpay');
+                const promptpayRes = await fetch('https://projectposserver-production.up.railway.app/api/getpromptpay');
                 const promptpayData = await promptpayRes.json();
     
                 const promptpayStatus = promptpayData.data[0].pm_status;
@@ -59,7 +59,7 @@ function Payment({ total, selected }) {
                 setPromptpays(promptpayStatus === 1);
     
     
-                const cashRes = await fetch('http://localhost:3001/api/getcash');
+                const cashRes = await fetch('https://projectposserver-production.up.railway.app/api/getcash');
                 const cashData = await cashRes.json();
     
                 const cashStatus = cashData.data[0].pm_status;
@@ -246,7 +246,7 @@ function Payment({ total, selected }) {
         console.log("👉 ส่ง billItem:", billItem);
 
         try {
-            const response = await axios.post("http://localhost:3001/api/addbillitem", billItem);
+            const response = await axios.post("https://projectposserver-production.up.railway.app/api/addbillitem", billItem);
             // console.log("✅ บันทึกข้อมูล BillItem สำเร็จ:", response.data);
         } catch (error) {
             console.error("❌ Error:", error.response?.data || error.message);
@@ -254,7 +254,7 @@ function Payment({ total, selected }) {
         }
 
         try {
-            const response = await axios.post('http://localhost:3001/api/update_stock', billItem);
+            const response = await axios.post('https://projectposserver-production.up.railway.app/api/update_stock', billItem);
             // console.log('อัปเดตสต็อกสำเร็จ:', response.data);
         }
         catch (error) {
@@ -285,7 +285,7 @@ function Payment({ total, selected }) {
         console.log("ส่ง ReportBill:", reportData);
 
         try {
-            const response = await axios.post('http://localhost:3001/api/reportbill', reportData);
+            const response = await axios.post('https://projectposserver-production.up.railway.app/api/reportbill', reportData);
             // console.log('บันทึกข้อมูลบิลลงใน Report_Bill สำเร็จ:', response.data);
         } catch (error) {
             alert('เกิดข้อผิดพลาดในการบันทึกข้อมูล ReportBill: ' + error.message);

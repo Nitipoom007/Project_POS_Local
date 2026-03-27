@@ -76,7 +76,7 @@ function Product() {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const response = await axios.get('http://localhost:3001/api/showproducts');
+                const response = await axios.get('https://projectposserver-production.up.railway.app/api/showproducts');
                 setProducts(response.data.data || []);
                 setProductsTemp(response.data.data || []);
             } catch (error) {
@@ -91,7 +91,7 @@ function Product() {
     useEffect(() => {
         const fetchCategory = async () => {
             try {
-                const response = await axios.get('http://localhost:3001/api/category');
+                const response = await axios.get('https://projectposserver-production.up.railway.app/api/category');
                 setCategory(response.data.data || []);
                 // console.log('data:', response.data.data);
             } catch (error) {

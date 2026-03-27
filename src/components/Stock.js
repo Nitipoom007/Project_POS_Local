@@ -30,7 +30,7 @@ function Stock() {
     // ✅ ดึงสินค้าทั้งหมด
     const fetchProducts = useCallback(async () => {
         try {
-            const response = await axios.get('http://localhost:3001/api/showproducts');
+            const response = await axios.get('https://projectposserver-production.up.railway.app/api/showproducts');
             setProducts(response.data.data || []);
             setProductsTemp(response.data.data || []);
             // await fetchProducts();
@@ -42,7 +42,7 @@ function Stock() {
     // ✅ ดึงหมวดหมู่
     const fetchCategory = useCallback(async () => {
         try {
-            const response = await axios.get('http://localhost:3001/api/category');
+            const response = await axios.get('https://projectposserver-production.up.railway.app/api/category');
             setCategory(response.data.data || []);
         } catch (error) {
             console.error('Error fetching category:', error);
@@ -242,7 +242,7 @@ function Stock() {
                                             }).then((result) => {
                                                 if (result.isConfirmed) {
                                                     try {
-                                                         axios.delete(`http://localhost:3001/api/deleteproduct/${product.product_id}`);
+                                                         axios.delete(`https://projectposserver-production.up.railway.app/api/deleteproduct/${product.product_id}`);
                                                         //  fetchProducts(); // ✅ อัปเดตข้อมูลใหม่
                                                         Swal.fire({
                                                             title: "Deleted!",
