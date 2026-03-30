@@ -77,7 +77,28 @@ function Payment({ total, selected }) {
     
     }, []);
 
-    
+    const printToLinux = async (data, billNo) => {
+    try {
+        await fetch("http://172.20.10.2:3002/print", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                billNo,
+                items: data.map(item => ({
+                    name: item.product_name,
+                    qty: item.quantity,
+                    price: item.product_price
+                })),
+                total: total,
+                money: money
+            })
+        });
+    } catch (err) {
+        console.error("Print error:", err);
+    }
+};
 
     const handlePayment = (method) => {
         // Handle payment logic here
@@ -126,6 +147,7 @@ function Payment({ total, selected }) {
             BillItem(newBillNo);
             ReportBill(newBillNo);
             generatePDF(updatedProducts, newBillNo, shopaddress);
+            printToLinux(updatedProducts, newBillNo);
             // setIsOpen1(false);
             // ใส่ฟังก์ชันบันทึกการชำระเงินตรงนี้
         } else {
@@ -164,6 +186,7 @@ function Payment({ total, selected }) {
         BillItem(newBillNo);
         ReportBill(newBillNo);
         generatePDF(updatedProducts, newBillNo, shopaddress);
+        printToLinux(updatedProducts, newBillNo);
     }
 
     const [billNo, setBillNo] = useState("");
