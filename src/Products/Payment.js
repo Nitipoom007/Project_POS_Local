@@ -50,55 +50,59 @@ function Payment({ total, selected }) {
     useEffect(() => {
         const fetchPaymentStatus = async () => {
             try {
-    
+
                 const promptpayRes = await fetch('https://projectposserver-production.up.railway.app/api/getpromptpay');
                 const promptpayData = await promptpayRes.json();
-    
+
                 const promptpayStatus = promptpayData.data[0].pm_status;
-    
+
                 setPromptpays(promptpayStatus === 1);
-    
-    
+
+
                 const cashRes = await fetch('https://projectposserver-production.up.railway.app/api/getcash');
                 const cashData = await cashRes.json();
-    
+
                 const cashStatus = cashData.data[0].pm_status;
-    
+
                 setCash(cashStatus === 1);
-    
+
             } catch (error) {
                 console.error(error);
             } finally {
                 setLoading(false);
             }
         };
-    
+
         fetchPaymentStatus();
-    
+
     }, []);
 
-    const printToLinux = async (data, billNo) => {
-    try {
-        await fetch("http://172.20.10.2:3002/print", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                billNo,
-                items: data.map(item => ({
-                    name: item.product_name,
-                    qty: item.quantity,
-                    price: item.product_price
-                })),
-                total: total,
-                money: money
-            })
-        });
-    } catch (err) {
-        console.error("Print error:", err);
-    }
-};
+    const printToLinux = async (data, billNo, total, moneyValue) => {
+        try {
+            // เปลี่ยนเป็น IP ของเครื่อง Pi และ Port 3001
+            await fetch("https://enterable-contextured-kelvin.ngrok-free.dev/print", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    // ส่งชื่อร้านไปจากที่นี่เพื่อแก้ปัญหาภาษาไทย ? บน Linux
+                    storeName: shopaddress[0]?.shop_name || "POS SHOP",
+                    billNo: billNo,
+                    items: data.map(item => ({
+                        name: item.product_name,
+                        qty: item.quantity,
+                        price: item.product_price
+                    })),
+                    total: total,
+                    money: moneyValue // ส่งยอดเงินที่รับมาเพื่อคำนวณเงินทอนในใบเสร็จ
+                })
+            });
+        } catch (err) {
+            console.error("Print error:", err);
+            // อาจจะเพิ่ม Swal.fire เพื่อแจ้งเตือนว่าเชื่อมต่อเครื่องพิมพ์ไม่ได้
+        }
+    };
 
     const handlePayment = (method) => {
         // Handle payment logic here
@@ -147,7 +151,7 @@ function Payment({ total, selected }) {
             BillItem(newBillNo);
             ReportBill(newBillNo);
             generatePDF(updatedProducts, newBillNo, shopaddress);
-            printToLinux(updatedProducts, newBillNo);
+            printToLinux(updatedProducts, newBillNo, total, money);
             // setIsOpen1(false);
             // ใส่ฟังก์ชันบันทึกการชำระเงินตรงนี้
         } else {
@@ -186,7 +190,7 @@ function Payment({ total, selected }) {
         BillItem(newBillNo);
         ReportBill(newBillNo);
         generatePDF(updatedProducts, newBillNo, shopaddress);
-        printToLinux(updatedProducts, newBillNo);
+        printToLinux(updatedProducts, newBillNo, total, total);
     }
 
     const [billNo, setBillNo] = useState("");
@@ -446,7 +450,7 @@ function Payment({ total, selected }) {
 
         doc.text("-------------------------------------------------------------", centerX, y, { align: "center" });
         y += 3;
-        
+
 
         // ===== TABLE HEADER (เหมือนต้นแบบ) =====
         doc.setFontSize(8);
@@ -455,7 +459,7 @@ function Payment({ total, selected }) {
 
         doc.text("-----------------------------------------------------------------", centerX, y, { align: "center" });
         y += 2;
-    
+
         // ===== ITEMS =====
         autoTable(doc, {
             startY: y,
@@ -508,7 +512,7 @@ function Payment({ total, selected }) {
         // ===== FOOTER =====
         doc.text("--------------------------------", centerX, y, { align: "center" });
         y += 4;
-        if(paymentMethod){
+        if (paymentMethod) {
             doc.text("แสกนเพื่อชำระเงิน", centerX, y, { align: "center" });
             y += 2;
             qrImage && doc.addImage(qrImage, "PNG", 11, y, 20, 20);
@@ -536,7 +540,7 @@ function Payment({ total, selected }) {
 
             {paymentMethod === false && cashMethod === false && (
                 <div className='flex justify-center grid-cols-2 gap-4 mt-4 border-collapse rounded-lg shadow-lg p-8'>
-                    
+
                     {promptpays === true && (
                         <div>
                             <button className='bg-blue-50 rounded-xl shadow hover:shadow-lg transition p-8 flex flex-col items-center'
@@ -548,14 +552,14 @@ function Payment({ total, selected }) {
                         </div>
                     )}
                     {promptpays === false && (
-                    <div>
-                        <div className='bg-blue-50 rounded-xl shadow hover:shadow-lg transition p-8 flex flex-col items-center'
+                        <div>
+                            <div className='bg-blue-50 rounded-xl shadow hover:shadow-lg transition p-8 flex flex-col items-center'
                             // onClick={() => handlePayment(total)}
-                        >
-                            <span className='mt-2'>PromptPay</span>
-                            <span className='text-red-600 text-xs mt-1'>ไม่สามารถใช้ได้</span>
+                            >
+                                <span className='mt-2'>PromptPay</span>
+                                <span className='text-red-600 text-xs mt-1'>ไม่สามารถใช้ได้</span>
+                            </div>
                         </div>
-                    </div>
                     )}
                     {cash === true && (
                         <div>
@@ -568,14 +572,14 @@ function Payment({ total, selected }) {
                         </div>
                     )}
                     {cash === false && (
-                    <div>
-                        <text className='bg-blue-50 rounded-xl shadow hover:shadow-lg transition p-8 flex flex-col items-center'
+                        <div>
+                            <text className='bg-blue-50 rounded-xl shadow hover:shadow-lg transition p-8 flex flex-col items-center'
                             // onClick={() => handleCash()}
-                        >
-                            <span className='mt-2'>เงินสด</span>
-                            <span className='text-red-600 text-xs mt-1'>ไม่สามารถใช้ได้</span>
-                        </text>
-                    </div>
+                            >
+                                <span className='mt-2'>เงินสด</span>
+                                <span className='text-red-600 text-xs mt-1'>ไม่สามารถใช้ได้</span>
+                            </text>
+                        </div>
                     )}
                 </div>
             )}
@@ -615,7 +619,7 @@ function Payment({ total, selected }) {
                     </button>
                 </div>
             )}
-            
+
 
             {cashMethod === true && (
                 <div className="mt-8 border-gray-300 rounded-lg shadow-sm">
