@@ -7,114 +7,117 @@ function Input() {
     const role = localStorage.getItem('userRole');
     const [category, setCategory] = useState([]);
     const [unit, setUnit] = useState([]);
+    const [existingProducts, setExistingProducts] = useState([]);
     const [form, setForm] = useState({
         userID: role === 'admin' ? "1" : "2",
     });
 
-    const handleChange = (e) => {
-        const { name, type, value, files } = e.target;
-        if (type === 'file') {
-            setForm({
-                ...form,
-                [name]: files[0],
-            });
-        } else {
-            setForm({
-                ...form,
-                [name]: value,
-            });
-        }
-    };
-
-    const handleSubmit = async (e) => {
-        // const userID = localStorage.getItem('userID');
-        // e.preventDefault();
-        // const formData = new FormData();
-        // for (const key in form) {
-        //     formData.append(key, form[key]);
-        // }
-        // // formData.append('userID', userID);
-        // console.log([...formData.entries()]);
-        // await fetchProducts(formData);
-        e.preventDefault();
-
-        // 1. แทนที่จะใช้ new FormData() ให้ใช้ตัวแปร form ที่เป็น Object ตรงๆ เลย
-        console.log('Submitting JSON data:', form);
-
-        // 2. ส่ง form เข้าไปใน fetchProducts
-        await fetchProducts(form);
-    };
-
-    // const fetchProducts = useCallback(async (e) => {
-    //     console.log('Submitting product data:', e);
-    //     try {
-    //         await axios.post('https://projectposserver-production.up.railway.app/api/addproducts', e, {
-    //             headers: { 'Content-Type': 'multipart/form-data' },
-    //         });
-    //         // alert('บันทึกข้อมูลสินค้าสำเร็จ');
-    //         Swal.fire({
-    //             title: "บันทึกข้อมูลสำเร็จ",
-    //             icon: "success",
-    //             showCancelButton: false,
-    //             timer: 1500,
-    //             draggable: true
-    //         });
-    //     } catch (error) {
-    //         // alert('เกิดข้อผิดพลาด: ' + error.message);
-    //         Swal.fire({
-    //             title: 'เกิดข้อผิดพลาด: ' + error.message,
-    //             icon: "error",
-    //             showCancelButton: false,
-    //             timer: 1500,
-    //             draggable: true
-    //         });
-    //     }
-    // }, []);
-    const fetchProducts = useCallback(async (productData) => {
-        try {
-            // ไม่ต้องระบุ headers: 'multipart/form-data' แล้ว 
-            // Axios จะจัดการเป็น application/json ให้เองเมื่อส่ง Object
-            await axios.post('https://projectposserver-production.up.railway.app/api/addproducts', productData);
-
-            Swal.fire({
-                title: "บันทึกข้อมูลสำเร็จ",
-                icon: "success",
-                timer: 1500,
-                showConfirmButton: false
-            });
-        } catch (error) {
-            Swal.fire({
-                title: 'เกิดข้อผิดพลาด: ' + (error.response?.data?.error || error.message),
-                icon: "error",
-                timer: 1500
-            });
-        }
-    }, []);
-
-    // ✅ ดึงหมวดหมู่
+    // --- 1. ประกาศฟังก์ชันทั้งหมดก่อน (ใช้ useCallback) ---
+    
     const fetchCategory = useCallback(async () => {
         try {
             const response = await axios.get('https://projectposserver-production.up.railway.app/api/category');
             setCategory(response.data.data || []);
-        } catch (error) {
-            console.error('Error fetching category:', error);
-        }
+        } catch (error) { console.error(error); }
     }, []);
 
-    // ✅ ดึงข้อมูลหน่วยสินค้า
     const fetchUnit = useCallback(async () => {
         try {
             const response = await axios.get('https://projectposserver-production.up.railway.app/api/unit');
             setUnit(response.data.data || []);
+        } catch (error) { console.error(error); }
+    }, []);
+
+    const fetchExistingProducts = useCallback(async () => {
+        try {
+            const response = await axios.get('https://projectposserver-production.up.railway.app/api/showproducts');
+            setExistingProducts(response.data.data || []);
+        } catch (error) { console.error(error); }
+    }, []);
+
+    const fetchProducts = useCallback(async (productData) => {
+        try {
+            await axios.post('https://projectposserver-production.up.railway.app/api/addproducts', productData);
+            Swal.fire({ title: "บันทึกข้อมูลสำเร็จ", icon: "success", timer: 1500, showConfirmButton: false });
         } catch (error) {
-            console.error('Error fetching unit:', error);
+            Swal.fire({ title: 'ผิดพลาด: ' + (error.response?.data?.error || error.message), icon: "error" });
         }
     }, []);
 
+    // --- 2. เรียกใช้ useEffect (วางไว้หลังฟังก์ชัน) ---
+    
     useEffect(() => {
-        fetchCategory();   // ← ดึงข้อมูล category ตอน component เปิด
-        fetchUnit();       // ← ดึงข้อมูล unit ตอน component เปิด
-    }, [fetchCategory, fetchUnit]);
+        fetchExistingProducts();
+        fetchCategory();
+        fetchUnit();
+    }, [fetchExistingProducts, fetchCategory, fetchUnit]);
+
+    // --- 3. Event Handlers ---
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setForm(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    // 1. ดึงข้อมูลล่าสุดจาก State มาเช็คอีกรอบ
+    const currentBarcode = form.barcode;
+    const found = existingProducts.find(item => item.barcode === currentBarcode);
+
+    if (found) {
+        // --- กรณีเจอสินค้าซ้ำ: คำนวณค่า ---
+        const qtyOld = Number(found.quantity) || 0;
+        const qtyNew = Number(form.quantity) || 0; // ค่าที่เพิ่งพิมพ์ในฟอร์ม
+        
+        const dataToUpdate = {
+            ...form,
+            quantity: qtyOld + qtyNew, 
+            cost: Number(form.cost),    // ใช้ค่าใหม่จากฟอร์ม
+            price: Number(form.price),  // ใช้ค่าใหม่จากฟอร์ม
+            isUpdate: true              
+        };
+
+        const confirm = await Swal.fire({
+            title: 'พบสินค้าเดิม!',
+            text: `ต้องการเพิ่มจำนวน ${found.name} อีก ${qtyNew} หน่วย ใช่หรือไม่?`,
+            icon: 'info',
+            showCancelButton: true,
+            confirmButtonText: 'อัปเดต',
+            cancelButtonText: 'ยกเลิก'
+        });
+
+        if (confirm.isConfirmed) {
+            await fetchProducts(dataToUpdate); // ส่งไปที่ API ตัวเดิม
+            await fetchExistingProducts();     // ดึงข้อมูลใหม่มาเก็บในเครื่อง
+            setForm({ userID: role === 'admin' ? "1" : "2" }); // ล้างฟอร์มหลังเสร็จ
+        }
+    } else {
+        // --- สินค้าใหม่ ---
+        await fetchProducts(form);
+        await fetchExistingProducts();
+        setForm({ userID: role === 'admin' ? "1" : "2" });
+    }
+};
+
+// เมื่อพิมพ์บาร์โค้ดจนครบหรือสแกนเสร็จ ให้ดึงชื่อสินค้าเดิมมาโชว์ในฟอร์มอัตโนมัติ
+useEffect(() => {
+    if (form.barcode) {
+        const found = existingProducts.find(item => item.barcode === form.barcode);
+        if (found) {
+            // ถ้าเจอ ให้เอาชื่อและข้อมูลเดิมมาใส่ในฟอร์มรอไว้เลย ยกเว้นจำนวนกับราคาที่รอเรากรอกใหม่
+            setForm(prev => ({
+                ...prev,
+                name: found.name,
+                detail: found.detail,
+                categoryID: found.category_id,
+                unitID: found.unit_id
+                // ไม่ใส่ quantity, cost, price เพราะต้องการให้คุณกรอกค่า "ใหม่" เข้าไปเอง
+            }));
+        }
+    }
+}, [form.barcode, existingProducts]);
 
 
     return (
@@ -173,17 +176,6 @@ function Input() {
                         />
                     </div>
                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    {/* <div className="mb-4 flex flex-col">
-                        <label className='font-bold text-blue-700 mb-1 h-5'>ไฟล์รูปภาพ</label>
-                        <input
-                            type="file"
-                            name="image"
-                            style={{ width: '100%', height: '35px', boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)', borderRadius: '4px', padding: '5px' }}
-                            // value={imageUrl.name || ''}
-                            accept="image/*"
-                            onChange={(e) => handleChange(e)}
-                        />
-                    </div> */}
                 </div>
                 <div className="flex">
                     <div className="mb-4 flex flex-col mr-2">
